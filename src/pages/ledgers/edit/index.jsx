@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { View, Text } from '@tarojs/components'
 import Taro, { useRouter } from '@tarojs/taro'
 import {
-    Form,
     Input,
     Button,
     Avatar,
@@ -41,6 +40,7 @@ const LedgerEdit = () => {
         setLoading(true)
         try {
             const ledgerData = await ledgerService.getLedger(id)
+            console.log('ledgerData', ledgerData)
             setLedger(ledgerData)
             setName(ledgerData.name || '')
             setDescription(ledgerData.description || '')
@@ -216,25 +216,29 @@ const LedgerEdit = () => {
             >
                 <Tabs.TabPane title="基本信息" value="1">
                     <View className="ledger-edit-form">
-                        <Form>
-                            <Form.Item name="name" label="账本名称" required>
-                                <Input
-                                    placeholder="请输入账本名称"
-                                    value={name}
-                                    onChange={handleNameChange}
-                                    maxLength={20}
-                                />
-                            </Form.Item>
+                        <View className="input-field">
+                            <View className="input-label">
+                                <Text>账本名称</Text>
+                            </View>
+                            <Input
+                                placeholder="请输入账本名称"
+                                value={name}
+                                onChange={handleNameChange}
+                                maxLength={20}
+                            />
+                        </View>
 
-                            <Form.Item name="description" label="账本描述">
-                                <Input
-                                    placeholder="请输入账本描述（选填）"
-                                    maxLength={40}
-                                    value={description}
-                                    onChange={handleDescriptionChange}
-                                />
-                            </Form.Item>
-                        </Form>
+                        <View className="input-field">
+                            <View className="input-label">
+                                <Text>账本描述</Text>
+                            </View>
+                            <Input
+                                placeholder="请输入账本描述（选填）"
+                                maxLength={40}
+                                value={description}
+                                onChange={handleDescriptionChange}
+                            />
+                        </View>
                     </View>
 
                     <View className="ledger-edit-submit">

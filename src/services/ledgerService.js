@@ -35,12 +35,123 @@ export default {
   getLedger: (id) => {
     return get('/api/ledger/get', { id });
   },
+
+  /**
+   * Get detailed ledger info
+   * @param {Number} id - ledget ID
+   */
+  // {
+  //   "code": 0,
+  //   "data": {
+  //     "createTime": "",
+  //     "deleteTime": "",
+  //     "description": "",
+  //     "entries": [
+  //       {
+  //         "amount": 0,
+  //         "category": "",
+  //         "createTime": "",
+  //         "date": "",
+  //         "deleteTime": "",
+  //         "icon": "",
+  //         "id": 0,
+  //         "ledgerId": 0,
+  //         "note": "",
+  //         "type": "",
+  //         "updateTime": "",
+  //         "userId": 0
+  //       }
+  //     ],
+  //     "icon": "",
+  //     "id": 0,
+  //     "members": [
+  //       {
+  //         "avatar": "",
+  //         "birthday": "",
+  //         "createTime": "",
+  //         "deleteTime": "",
+  //         "email": "",
+  //         "id": 0,
+  //         "ledgerId": 0,
+  //         "openId": "",
+  //         "phoneNumber": "",
+  //         "role": "",
+  //         "unionId": "",
+  //         "updateTime": "",
+  //         "userId": 0,
+  //         "username": ""
+  //       }
+  //     ],
+  //     "name": "",
+  //     "updateTime": ""
+  //   },
+  //   "message": ""
+  // }
+  getLedgerDetail: (id) => {
+    return get('/api/ledger/get/detail', { id });
+  },
   
   /**
    * Get all ledgers for the current user
    */
   getMyLedgers: () => {
     return get('/api/ledger/my/list');
+  },
+
+  /**
+   * Get detailed ledger info for all ledgers
+   */
+  // {
+  //   "code": 0,
+  //   "data": [
+  //     {
+  //       "createTime": "",
+  //       "deleteTime": "",
+  //       "description": "",
+  //       "entries": [
+  //         {
+  //           "amount": 0,
+  //           "category": "",
+  //           "createTime": "",
+  //           "date": "",
+  //           "deleteTime": "",
+  //           "icon": "",
+  //           "id": 0,
+  //           "ledgerId": 0,
+  //           "note": "",
+  //           "type": "",
+  //           "updateTime": "",
+  //           "userId": 0
+  //         }
+  //       ],
+  //       "icon": "",
+  //       "id": 0,
+  //       "members": [
+  //         {
+  //           "avatar": "",
+  //           "birthday": "",
+  //           "createTime": "",
+  //           "deleteTime": "",
+  //           "email": "",
+  //           "id": 0,
+  //           "ledgerId": 0,
+  //           "openId": "",
+  //           "phoneNumber": "",
+  //           "role": "",
+  //           "unionId": "",
+  //           "updateTime": "",
+  //           "userId": 0,
+  //           "username": ""
+  //         }
+  //       ],
+  //       "name": "",
+  //       "updateTime": ""
+  //     }
+  //   ],
+  //   "message": ""
+  // }
+  getMyLedgersDetail: () => {
+    return get('/api/ledger/my/list/detail');
   },
   
   /**
