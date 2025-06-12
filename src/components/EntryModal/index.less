@@ -1,0 +1,175 @@
+.entry-modal {
+  padding: 20px 16px;
+  overflow-y: auto;
+  height: 100%;
+  background-color: #fff;
+}
+
+.entry-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #f5f5f5;
+  
+  &__title {
+    font-size: 18px;
+    font-weight: 500;
+  }
+  
+  &__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #999;
+    
+    &:active {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+  }
+}
+
+.entry-modal-type {
+  margin-bottom: 20px;
+  
+  :global {
+    .nut-tabs__titles {
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #f5f5f5;
+    }
+    
+    .nut-tabpane {
+      padding: 0;
+    }
+  }
+}
+
+.entry-modal-amount {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 8px 0;
+  
+  &__prefix {
+    font-size: 24px;
+    margin-right: 8px;
+    color: #333;
+  }
+  
+  &__input {
+    font-size: 36px;
+    font-weight: 500;
+    cursor: pointer;
+    color: #333;
+  }
+}
+
+.entry-modal-categories {
+  margin-bottom: 24px;
+  
+  &__title {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #666;
+  }
+  
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -6px;
+  }
+  
+  &__item {
+    width: calc(25% - 12px);
+    margin: 6px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 18px;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    transition: all 0.2s;
+    
+    &--active {
+      background-color: #1677ff;
+      color: white;
+    }
+    
+    &:active {
+      opacity: 0.8;
+    }
+  }
+}
+
+.entry-modal-form {
+  margin-bottom: 24px;
+  
+  :global {
+    .nut-form-item {
+      padding: 12px 0;
+      margin-bottom: 0;
+    }
+    
+    .nut-textarea {
+      --nutui-textarea-padding: 8px 12px;
+      --nutui-textarea-background: #f5f5f5;
+      border-radius: 8px;
+    }
+  }
+  
+  &__picker {
+    cursor: pointer;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    background-color: #f5f5f5;
+    padding: 0 12px;
+    border-radius: 8px;
+  }
+}
+
+.entry-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 8px 0;
+  
+  &__delete {
+    flex: 1;
+    background-color: #fff1f0;
+    color: #ff4d4f;
+    border: 1px solid #ffccc7;
+    
+    &:active {
+      background-color: #fff1f0;
+      opacity: 0.8;
+    }
+  }
+  
+  &__save {
+    flex: 2;
+  }
+  
+  :global {
+    .nut-button {
+      border-radius: 8px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      &--primary {
+        background: linear-gradient(135deg, #1677ff, #4096ff);
+        border: none;
+      }
+    }
+  }
+} 

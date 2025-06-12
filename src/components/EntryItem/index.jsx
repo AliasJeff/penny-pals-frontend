@@ -1,0 +1,63 @@
+import React from "react";
+import { View, Text } from "@tarojs/components";
+import { formatDate } from "../../utils/dateUtils";
+import "./index.less";
+
+const EntryItem = ({ entry, onTap, onChange }) => {
+  const { id, amount, category, type, note, date, icon } = entry;
+
+  // Format amount for display with appropriate sign
+  const formatAmount = () => {
+    const absAmount = Math.abs(amount).toFixed(2);
+    if (type === "expense") {
+      return `-${absAmount}`;
+    } else if (type === "income") {
+      return `+${absAmount}`;
+    }
+    return absAmount;
+  };
+
+  // Handle tap on entry item
+  const handleTap = () => {
+    if (onTap) {
+      onTap(entry);
+    }
+  };
+
+  // Determine amount color based on type
+  const getAmountColor = () => {
+    switch (type) {
+      case "expense":
+        return "entry-item__amount--expense";
+      case "income":
+        return "entry-item__amount--income";
+      default:
+        return "";
+    }
+  };
+
+  return (
+    <View className="entry-item" onClick={handleTap}>
+      <View className="entry-item__icon-container">
+        <Text className="entry-item__icon">
+          {icon || category.substring(0, 1)}
+        </Text>
+      </View>
+
+      <View className="entry-item__content">
+        <View className="entry-item__left">
+          <Text className="entry-item__category">{category}</Text>
+          {note && <Text className="entry-item__note">{note}</Text>}
+        </View>
+        <View className="entry-item__right">
+          <Text className={`entry-item__amount ${getAmountColor()}`}>
+            {formatAmount()}
+          </Text>
+          <Text className="entry-item__date" style={!note ? {marginLeft: 'auto'} : {}}>{formatDate(date)}</Text>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+export default EntryItem;

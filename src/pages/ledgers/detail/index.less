@@ -1,0 +1,172 @@
+.ledger-detail-page {
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.ledger-detail-header {
+  background: linear-gradient(135deg, #4670FF, #7B53FF);
+  padding: 40px 20px 20px;
+  color: #FFFFFF;
+  position: relative;
+  
+  &__actions {
+    position: absolute;
+    top: 40px;
+    right: 16px;
+    display: flex;
+  }
+  
+  &__action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+  }
+  
+  &__content {
+    padding-right: 80px;
+  }
+  
+  &__name {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: block;
+  }
+  
+  &__description {
+    font-size: 14px;
+    opacity: 0.8;
+  }
+}
+
+.ledger-detail-budget {
+  background-color: #FFFFFF;
+  padding: 16px;
+  margin-bottom: 12px;
+  
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  
+  &__title {
+    font-size: 16px;
+    font-weight: 500;
+  }
+  
+  &__amount {
+    font-size: 16px;
+    font-weight: 500;
+    color: #4670FF;
+  }
+}
+
+.ledger-detail-tabs {
+  background-color: #FFFFFF;
+}
+
+.ledger-detail-entries-group {
+  margin-bottom: 8px;
+  
+  &__header {
+    padding: 12px 16px 8px;
+    background-color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    color: #999999;
+  }
+  
+  &__date {
+    font-size: 14px;
+    margin-left: 6px;
+  }
+}
+
+.ledger-detail-members {
+  padding: 16px;
+  background-color: #FFFFFF;
+  
+  &__invite-btn {
+    margin-top: 20px;
+    width: 100%;
+  }
+}
+
+.ledger-detail-member {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f5f5f5;
+  
+  &__info {
+    margin-left: 12px;
+  }
+  
+  &__name {
+    font-size: 16px;
+    color: #333333;
+    margin-bottom: 4px;
+    display: block;
+  }
+  
+  &__role {
+    font-size: 12px;
+    color: #999999;
+  }
+}
+
+.ledger-detail-share {
+  padding: 20px;
+  
+  &__header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  &__title {
+    font-size: 18px;
+    font-weight: 500;
+  }
+  
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  &__tip {
+    font-size: 14px;
+    color: #999999;
+    margin-bottom: 20px;
+  }
+  
+  &__qrcode {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 20px;
+    
+    &-placeholder {
+      width: 100%;
+      height: 100%;
+      background-color: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999999;
+    }
+  }
+  
+  &__btn {
+    width: 80%;
+  }
+}
+
+.ledger-detail-skeleton {
+  padding: 16px;
+} 
