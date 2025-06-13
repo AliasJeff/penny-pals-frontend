@@ -11,7 +11,7 @@ export default {
   createLedger: (data) => {
     return post('/api/ledger/create', data);
   },
-  
+
   /**
    * Update a ledger
    * @param {Object} data - ledger information
@@ -19,7 +19,7 @@ export default {
   updateLedger: (data) => {
     return post('/api/ledger/update', data);
   },
-  
+
   /**
    * Delete a ledger
    * @param {Number} id - ledger ID
@@ -27,7 +27,7 @@ export default {
   deleteLedger: (id) => {
     return post('/api/ledger/delete', null, { header: { params: { id } } });
   },
-  
+
   /**
    * Get a ledger by ID
    * @param {Number} id - ledger ID

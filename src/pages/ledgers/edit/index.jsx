@@ -10,6 +10,7 @@ import {
     ActionSheet,
 } from '@nutui/nutui-react-taro'
 import { ledgerService } from '../../../services'
+import InvitePopup from '../../../components/InvitePopup'
 import './index.less'
 
 const LedgerEdit = () => {
@@ -27,6 +28,8 @@ const LedgerEdit = () => {
     const [selectedUserId, setSelectedUserId] = useState(null)
     const [showActionSheet, setShowActionSheet] = useState(false)
     const [actionSheetActions, setActionSheetActions] = useState([])
+    // Add state for showing the invite popup
+    const [showInvitePopup, setShowInvitePopup] = useState(false)
 
     // Fetch ledger data
     useEffect(() => {
@@ -102,11 +105,9 @@ const LedgerEdit = () => {
         setDescription(value)
     }
 
-    // Add new member
+    // Add new member - show invite popup instead of navigating
     const handleAddMember = () => {
-        Taro.navigateTo({
-            url: `/pages/contacts/select/index?ledgerId=${id}`,
-        })
+        setShowInvitePopup(true)
     }
 
     // Open member action sheet
@@ -200,6 +201,13 @@ const LedgerEdit = () => {
         } finally {
             setSelectedUserId(null)
         }
+    }
+
+    // Handle closing invite popup and refresh members list
+    const handleInviteClose = () => {
+        setShowInvitePopup(false)
+        // Refresh the member list after inviting
+        fetchLedgerData()
     }
 
     return (
@@ -331,6 +339,13 @@ const LedgerEdit = () => {
                     setShowActionSheet(false)
                 }}
                 onCancel={() => setShowActionSheet(false)}
+            />
+
+            {/* Invite popup */}
+            <InvitePopup 
+                visible={showInvitePopup}
+                onClose={handleInviteClose}
+                ledgerId={id}
             />
         </View>
     )

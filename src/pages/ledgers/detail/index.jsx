@@ -10,7 +10,7 @@ import {
   Button,
   Dialog,
   Popup,
-  ActionSheet
+  ActionSheet,
 } from '@nutui/nutui-react-taro';
 import { 
   Share, 
@@ -20,6 +20,7 @@ import { ledgerService, entryService } from '../../../services';
 import EntryItem from '../../../components/EntryItem';
 import EntryModal from '../../../components/EntryModal';
 import FloatingButton from '../../../components/FloatingButton';
+import InvitePopup from '../../../components/InvitePopup';
 import { getRelativeTimeDesc } from '../../../utils/dateUtils';
 import './index.less';
 
@@ -35,8 +36,11 @@ const LedgerDetail = () => {
   const [showActions, setShowActions] = useState(false);
   const [showSharePopup, setShowSharePopup] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
+  const [showInvitePopup, setShowInvitePopup] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
   const [stats, setStats] = useState({
     totalExpense: 0,
     totalIncome: 0,
@@ -112,10 +116,22 @@ const LedgerDetail = () => {
       // Process users if they exist in the detail API response
       if (ledgerData.members && Array.isArray(ledgerData.members)) {
         setUsers(ledgerData.members);
+
+        // Check if current user is the owner
+        const currentUser = Taro.getStorageSync('currentUser') || {};
+        const currentUserId = currentUser.id;
+        const owner = ledgerData.members.find(member => member.role === 'owner' || member.isOwner);
+        setIsOwner(owner && owner.id === currentUserId);
       } else {
         // Fetch ledger users separately if not included in detail
         const usersData = await ledgerService.listLedgerUsers(id);
         setUsers(usersData || []);
+        
+        // Check if current user is the owner
+        const currentUser = Taro.getStorageSync('currentUser') || {};
+        const currentUserId = currentUser.id;
+        const owner = usersData.find(member => member.role === 'owner' || member.isOwner);
+        setIsOwner(owner && owner.id === currentUserId);
       }
     } catch (error) {
       console.error('Error fetching ledger data:', error);
@@ -157,6 +173,18 @@ const LedgerDetail = () => {
     fetchLedgerData();
   };
   
+  // Open invite popup
+  const handleShowInvitePopup = () => {
+    setShowInvitePopup(true);
+  };
+  
+  // Handle closing invite popup and refresh members list
+  const handleInviteClose = () => {
+    setShowInvitePopup(false);
+    // Refresh the member list after inviting
+    fetchLedgerData();
+  };
+  
   // Handle edit ledger
   const handleEditLedger = () => {
     Taro.navigateTo({
@@ -182,6 +210,29 @@ const LedgerDetail = () => {
       console.error('Error deleting ledger:', error);
       Taro.showToast({
         title: '删除失败，请重试',
+        icon: 'none'
+      });
+    }
+  };
+
+  // Handle leave ledger
+  const handleLeaveLedger = async () => {
+    try {
+      await ledgerService.exitLedger(id);
+      
+      Taro.showToast({
+        title: '已退出账本',
+        icon: 'success'
+      });
+      
+      // Navigate back
+      setTimeout(() => {
+        Taro.navigateBack();
+      }, 1500);
+    } catch (error) {
+      console.error('Error leaving ledger:', error);
+      Taro.showToast({
+        title: '退出失败，请重试',
         icon: 'none'
       });
     }
@@ -329,7 +380,7 @@ const LedgerDetail = () => {
                 
                 <Button 
                   className="ledger-detail-members__invite-btn"
-                  onClick={() => Taro.navigateTo({ url: `/pages/ledgers/invite/index?id=${id}` })}
+                  onClick={handleShowInvitePopup}
                 >
                   邀请成员
                 </Button>
@@ -348,7 +399,9 @@ const LedgerDetail = () => {
             title="账本操作"
             options={[
               { name: '编辑账本', value: 'edit' },
-              { name: '删除账本', value: 'delete', color: '#FF5C5C' }
+              isOwner 
+                ? { name: '删除账本', value: 'delete', color: '#FF5C5C' }
+                : { name: '退出账本', value: 'leave', color: '#FF5C5C' }
             ]}
             onSelect={(value) => {
               setShowActions(false);
@@ -356,6 +409,8 @@ const LedgerDetail = () => {
                 handleEditLedger();
               } else if (value.value === 'delete') {
                 setShowDeleteDialog(true);
+              } else if (value.value === 'leave') {
+                setShowLeaveDialog(true);
               }
             }}
           />
@@ -394,6 +449,13 @@ const LedgerDetail = () => {
             </View>
           </Popup>
           
+          {/* Use the reusable InvitePopup component */}
+          <InvitePopup 
+            visible={showInvitePopup}
+            onClose={handleInviteClose}
+            ledgerId={id}
+          />
+          
           {/* Delete Confirmation Dialog */}
           <Dialog
             title="删除账本"
@@ -401,6 +463,15 @@ const LedgerDetail = () => {
             visible={showDeleteDialog}
             onConfirm={handleDeleteLedger}
             onCancel={() => setShowDeleteDialog(false)}
+          />
+
+          {/* Leave Confirmation Dialog */}
+          <Dialog
+            title="退出账本"
+            content="确定要退出该账本吗？退出后需要重新接受邀请才能加入。"
+            visible={showLeaveDialog}
+            onConfirm={handleLeaveLedger}
+            onCancel={() => setShowLeaveDialog(false)}
           />
           
           {/* Entry Modal - for both Add and Edit */}
