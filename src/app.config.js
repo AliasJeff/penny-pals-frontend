@@ -8,6 +8,7 @@ export default defineAppConfig({
     'pages/ledgers/create/index',
     'pages/ledgers/detail/index',
     'pages/ledgers/edit/index',
+    'pages/ledgers/join/index',
     // 'pages/ledgers/invite/index',
     // 'pages/entry/detail/index',
     // 'pages/profile/edit/index',
@@ -21,7 +22,9 @@ export default defineAppConfig({
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#4670FF',
     navigationBarTitleText: '记账小星球🌍',
-    navigationBarTextStyle: 'white'
+    navigationBarTextStyle: 'white',
+    enableShareAppMessage: true,
+    enableShareTimeline: true,
   },
   tabBar: {
     color: '#999999',

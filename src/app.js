@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { useDidShow, useDidHide } from '@tarojs/taro'
+import { useDidShow, useDidHide, useShareAppMessage } from '@tarojs/taro'
 import Taro from '@tarojs/taro'
 // 导入 NutUI 样式
 import '@nutui/nutui-react-taro/dist/style.css'
@@ -11,6 +11,14 @@ function App(props) {
   useEffect(() => {
     checkLoginStatus();
   }, [])
+  
+  // Register share functionality
+  useShareAppMessage(async () => {
+    return {
+      title: '邀请你使用记账小星球',
+      path: '/pages/home/index'
+    };
+  });
 
   // 检查登录状态
   const checkLoginStatus = () => {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text } from '@tarojs/components';
-import Taro, { useDidShow } from '@tarojs/taro';
+import Taro, { useDidShow, useShareAppMessage } from '@tarojs/taro';
 import { Empty, Dialog, Skeleton, Swiper } from '@nutui/nutui-react-taro';
 import { Plus } from '@nutui/icons-react-taro';
 import { ledgerService } from '../../services';
@@ -16,6 +16,14 @@ const Ledgers = () => {
   // Fetch ledgers when page shows
   useDidShow(() => {
     fetchLedgers();
+  });
+
+  // Register share functionality
+  useShareAppMessage(async () => {
+    return {
+      title: '邀请你使用记账小星球',
+      path: '/pages/login/index'
+    };
   });
 
   // Fetch user's ledgers

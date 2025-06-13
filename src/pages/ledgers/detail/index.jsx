@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text } from '@tarojs/components';
-import Taro, { useRouter } from '@tarojs/taro';
+import Taro, { useRouter, useShareAppMessage } from '@tarojs/taro';
 import { 
   Avatar, 
   Progress, 
@@ -16,7 +16,7 @@ import {
   Share, 
   Setting, 
 } from '@nutui/icons-react-taro';
-import { ledgerService, entryService } from '../../../services';
+import { ledgerService, entryService, inviteService } from '../../../services';
 import EntryItem from '../../../components/EntryItem';
 import EntryModal from '../../../components/EntryModal';
 import FloatingButton from '../../../components/FloatingButton';
@@ -34,7 +34,6 @@ const LedgerDetail = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('1');
   const [showActions, setShowActions] = useState(false);
-  const [showSharePopup, setShowSharePopup] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [showEntryModal, setShowEntryModal] = useState(false);
@@ -268,6 +267,37 @@ const LedgerDetail = () => {
     </View>
   );
   
+  // Register share functionality
+  useShareAppMessage(async () => {
+    try {
+      // Generate invitation code from API
+      const code = await inviteService.createInviteCode(id);
+      
+      return {
+        title: `${ledger?.name || '账本'} - 邀请你一起记账`,
+        path: `/pages/ledgers/join/index?inviteCode=${code}`,
+        imageUrl: ledger?.icon // TODO: Use ledger cover image if available, otherwise default mini-program card
+      };
+    } catch (error) {
+      console.error('Error generating invite code:', error);
+      
+      // Fallback to sharing without invite code if API call fails
+      return {
+        title: '邀请你使用记账小星球',
+        path: '/pages/home/index'
+      };
+    }
+  });
+  
+  // Handle share button click
+  const handleShare = () => {
+    // Show native share sheet
+    Taro.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage']
+    });
+  };
+  
   return (
     <View className="ledger-detail-page">
       {loading ? (
@@ -279,7 +309,7 @@ const LedgerDetail = () => {
             <View className="ledger-detail-header__actions">
               <View 
                 className="ledger-detail-header__action-btn"
-                onClick={() => setShowSharePopup(true)}
+                onClick={handleShare}
               >
                 <Share size={20} color="#FFFFFF" />
               </View>
@@ -414,40 +444,6 @@ const LedgerDetail = () => {
               }
             }}
           />
-          
-          {/* Share Popup */}
-          <Popup
-            visible={showSharePopup}
-            position="bottom"
-            round
-            onClose={() => setShowSharePopup(false)}
-          >
-            <View className="ledger-detail-share">
-              <View className="ledger-detail-share__header">
-                <Text className="ledger-detail-share__title">分享账本</Text>
-              </View>
-              
-              <View className="ledger-detail-share__content">
-                <Text className="ledger-detail-share__tip">
-                  将账本分享给好友，一起记账
-                </Text>
-                
-                <View className="ledger-detail-share__qrcode">
-                  {/* Placeholder for QR code */}
-                  <View className="ledger-detail-share__qrcode-placeholder">
-                    二维码
-                  </View>
-                </View>
-                
-                <Button 
-                  type="primary"
-                  className="ledger-detail-share__btn"
-                >
-                  保存二维码
-                </Button>
-              </View>
-            </View>
-          </Popup>
           
           {/* Use the reusable InvitePopup component */}
           <InvitePopup 
