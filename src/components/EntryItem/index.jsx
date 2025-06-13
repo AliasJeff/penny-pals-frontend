@@ -2,9 +2,12 @@ import React from "react";
 import { View, Text } from "@tarojs/components";
 import { formatDate } from "../../utils/dateUtils";
 import "./index.less";
+import Taro from "@tarojs/taro";
 
 const EntryItem = ({ entry, onTap, onChange }) => {
-  const { id, amount, category, type, note, date, icon } = entry;
+  const { id, amount, category, type, note, date, icon, username } = entry;
+
+  const currentUser = Taro.getStorageSync("currentUser");
 
   // Format amount for display with appropriate sign
   const formatAmount = () => {
@@ -46,14 +49,24 @@ const EntryItem = ({ entry, onTap, onChange }) => {
 
       <View className="entry-item__content">
         <View className="entry-item__left">
-          <Text className="entry-item__category">{category}</Text>
-          {note && <Text className="entry-item__note">{note}</Text>}
+          <Text className="entry-item__category">
+            {category}
+            {note && <Text className="entry-item__note"> - {note}</Text>}
+          </Text>
+          <Text className="entry-item__user">
+            @{username === currentUser?.username ? "我" : username}
+          </Text>
         </View>
         <View className="entry-item__right">
           <Text className={`entry-item__amount ${getAmountColor()}`}>
             {formatAmount()}
           </Text>
-          <Text className="entry-item__date" style={!note ? {marginLeft: 'auto'} : {}}>{formatDate(date)}</Text>
+          <Text
+            className="entry-item__date"
+            style={!note ? { marginLeft: "auto" } : {}}
+          >
+            {formatDate(date)}
+          </Text>
         </View>
       </View>
     </View>

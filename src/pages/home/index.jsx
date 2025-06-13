@@ -32,6 +32,7 @@ const Home = () => {
     try {
       // Fetch user info
       const userData = await userService.getCurrentUser();
+      Taro.setStorageSync('currentUser', userData);
       setUser(userData);
 
       // Fetch ledgers with detailed info
