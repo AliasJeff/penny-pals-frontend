@@ -1,11 +1,11 @@
 .home-page {
   background-color: #f5f5f5;
   min-height: 100vh;
-  padding-bottom: 60px;
+  padding-bottom: 80px;
 }
 
 .home-header {
-  background: linear-gradient(135deg, #4670FF, #7B53FF);
+  background: linear-gradient(135deg, #4670FF 0%, #6C8EFF 100%);
   padding: 30px 20px;
   color: #FFFFFF;
   border-radius: 0 0 20px 20px;
@@ -25,6 +25,12 @@
   
   &__balance {
     display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  
+  &__balance-info {
+    display: flex;
     flex-direction: column;
   }
   
@@ -37,6 +43,15 @@
   &__balance-amount {
     font-size: 28px;
     font-weight: bold;
+  }
+
+  &__stats {
+    text-align: right;
+  }
+
+  &__stats-text {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
   }
 }
 

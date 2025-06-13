@@ -11,6 +11,7 @@ import './index.less';
 const Ledgers = () => {
   const [ledgers, setLedgers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ ledgerCount: 0, entryCount: 0 });
 
   // Fetch ledgers when page shows
   useDidShow(() => {
@@ -21,8 +22,19 @@ const Ledgers = () => {
   const fetchLedgers = async () => {
     setLoading(true);
     try {
-      const data = await ledgerService.getMyLedgers();
+      const data = await ledgerService.getMyLedgersDetail();
       setLedgers(data || []);
+      
+      // Calculate total stats
+      if (data && data.length > 0) {
+        const totalEntries = data.reduce((sum, ledger) => 
+          sum + (ledger.entries?.length || 0), 0);
+        
+        setStats({
+          ledgerCount: data.length,
+          entryCount: totalEntries
+        });
+      }
     } catch (error) {
       console.error('Error fetching ledgers:', error);
       Taro.showToast({
@@ -58,6 +70,11 @@ const Ledgers = () => {
     <View className="ledgers-page">
       <View className="ledgers-header">
         <Text className="ledgers-header__title">我的账本</Text>
+        <View className="ledgers-header__stats">
+          <Text className="ledgers-header__stats-text">
+            {stats.ledgerCount}个账本 · {stats.entryCount}笔记录
+          </Text>
+        </View>
       </View>
       
       {loading ? (

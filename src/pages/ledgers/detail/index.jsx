@@ -37,6 +37,11 @@ const LedgerDetail = () => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
+  const [stats, setStats] = useState({
+    totalExpense: 0,
+    totalIncome: 0,
+    entryCount: 0
+  });
   
   // Fetch data when component mounts
   useEffect(() => {
@@ -50,20 +55,68 @@ const LedgerDetail = () => {
     setLoading(true);
     try {
       // Fetch ledger details
-      const ledgerData = await ledgerService.getLedger(id);
+      const ledgerData = await ledgerService.getLedgerDetail(id);
       setLedger(ledgerData);
       
-      // Fetch ledger entries
-      const entriesData = await entryService.listLedgerEntries({
-        ledgerId: id,
-        orderBy: 'date',
-        orderDirection: 'desc'
-      });
-      setEntries(entriesData || []);
+      // Process entries if they exist in the detail API response
+      if (ledgerData.entries && Array.isArray(ledgerData.entries)) {
+        setEntries(ledgerData.entries);
+        
+        // Calculate stats
+        let totalExpense = 0;
+        let totalIncome = 0;
+        
+        ledgerData.entries.forEach(entry => {
+          if (entry.type === 'expense') {
+            totalExpense += (entry.amount || 0);
+          } else if (entry.type === 'income') {
+            totalIncome += (entry.amount || 0);
+          }
+        });
+        
+        setStats({
+          totalExpense,
+          totalIncome,
+          entryCount: ledgerData.entries.length
+        });
+      } else {
+        // If entries aren't included in the detail response, fetch them separately
+        const entriesData = await entryService.listLedgerEntries({
+          ledgerId: id,
+          orderBy: 'date',
+          orderDirection: 'desc'
+        });
+        setEntries(entriesData || []);
+        
+        // Calculate stats from fetched entries
+        let totalExpense = 0;
+        let totalIncome = 0;
+        
+        if (entriesData && entriesData.length > 0) {
+          entriesData.forEach(entry => {
+            if (entry.type === 'expense') {
+              totalExpense += (entry.amount || 0);
+            } else if (entry.type === 'income') {
+              totalIncome += (entry.amount || 0);
+            }
+          });
+          
+          setStats({
+            totalExpense,
+            totalIncome,
+            entryCount: entriesData.length
+          });
+        }
+      }
       
-      // Fetch ledger users
-      const usersData = await ledgerService.listLedgerUsers(id);
-      setUsers(usersData || []);
+      // Process users if they exist in the detail API response
+      if (ledgerData.members && Array.isArray(ledgerData.members)) {
+        setUsers(ledgerData.members);
+      } else {
+        // Fetch ledger users separately if not included in detail
+        const usersData = await ledgerService.listLedgerUsers(id);
+        setUsers(usersData || []);
+      }
     } catch (error) {
       console.error('Error fetching ledger data:', error);
       Taro.showToast({
@@ -194,6 +247,22 @@ const LedgerDetail = () => {
                   {ledger.description}
                 </Text>
               )}
+            </View>
+            
+            {/* Stats Summary */}
+            <View className="ledger-detail-stats">
+              <View className="ledger-detail-stats__item">
+                <Text className="ledger-detail-stats__value">¥{stats.totalExpense.toFixed(2)}</Text>
+                <Text className="ledger-detail-stats__label">总支出</Text>
+              </View>
+              <View className="ledger-detail-stats__item">
+                <Text className="ledger-detail-stats__value">¥{stats.totalIncome.toFixed(2)}</Text>
+                <Text className="ledger-detail-stats__label">总收入</Text>
+              </View>
+              <View className="ledger-detail-stats__item">
+                <Text className="ledger-detail-stats__value">{stats.entryCount}</Text>
+                <Text className="ledger-detail-stats__label">记账笔数</Text>
+              </View>
             </View>
           </View>
           

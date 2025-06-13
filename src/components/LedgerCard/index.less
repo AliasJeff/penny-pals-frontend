@@ -1,24 +1,28 @@
 .ledger-card {
   background-color: #ffffff;
   border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin-bottom: 10px;
   
   &__header {
     display: flex;
     align-items: center;
+    margin-bottom: 10px;
   }
   
   &__icon {
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     border-radius: 8px;
     margin-right: 12px;
   }
   
   &__avatar {
     margin-right: 12px;
+    border-radius: 8px;
+    width: 40px !important;
+    height: 40px !important;
   }
   
   &__info {
@@ -30,19 +34,76 @@
   
   &__name {
     font-size: 16px;
-    font-weight: bold;
-    color: #333333;
+    font-weight: 600;
+    color: #333;
     margin-bottom: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: block;
   }
   
   &__description {
+    font-size: 12px;
+    color: #666;
+    display: block;
+  }
+  
+  // Statistics styles
+  &__stats {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 4px;
+  }
+  
+  &__stats-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  &__stats-value {
     font-size: 14px;
-    color: #999999;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  &__stats-label {
+    font-size: 12px;
+    color: #999;
+    margin-top: 2px;
+  }
+  
+  // Members styles
+  &__members {
+    display: flex;
+    align-items: center;
+    padding-top: 4px;
+    flex-wrap: wrap;
+  }
+  
+  &__members-avatars {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  
+  &__member-avatar {
+    margin-right: 6px !important;
+    margin-bottom: 4px !important;
+    border: 1px solid #fff;
+  }
+  
+  &__members-more {
+    font-size: 10px;
+    background: #eaeaea;
+    color: #666;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 4px;
   }
 } 

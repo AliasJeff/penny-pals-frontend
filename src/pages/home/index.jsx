@@ -19,6 +19,7 @@ const Home = () => {
   const [activeTab, setActiveTab] = useState('1');
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
+  const [stats, setStats] = useState({ ledgerCount: 0, entryCount: 0 });
 
   // Fetch data when page shows
   useDidShow(() => {
@@ -33,9 +34,20 @@ const Home = () => {
       const userData = await userService.getCurrentUser();
       setUser(userData);
 
-      // Fetch ledgers
-      const ledgersData = await ledgerService.getMyLedgers();
+      // Fetch ledgers with detailed info
+      const ledgersData = await ledgerService.getMyLedgersDetail();
       setLedgers(ledgersData || []);
+
+      // Calculate ledger stats
+      if (ledgersData && ledgersData.length > 0) {
+        const totalEntries = ledgersData.reduce((sum, ledger) => 
+          sum + (ledger.entries?.length || 0), 0);
+        
+        setStats({
+          ledgerCount: ledgersData.length,
+          entryCount: totalEntries
+        });
+      }
 
       // Fetch recent entries
       const entries = await entryService.listMyEntries({
@@ -141,8 +153,15 @@ const Home = () => {
               <Text className="home-header__username">{user?.username || '用户'}</Text>
             </View>
             <View className="home-header__balance">
-              <Text className="home-header__balance-label">当前余额</Text>
-              <Text className="home-header__balance-amount">¥ {balance.toFixed(2)}</Text>
+              <View className="home-header__balance-info">
+                <Text className="home-header__balance-label">当前余额</Text>
+                <Text className="home-header__balance-amount">¥ {balance.toFixed(2)}</Text>
+              </View>
+              {/* <View className="home-header__stats">
+                <Text className="home-header__stats-text">
+                  {stats.ledgerCount}个账本 · {stats.entryCount}笔记录
+                </Text>
+              </View> */}
             </View>
           </View>
           
