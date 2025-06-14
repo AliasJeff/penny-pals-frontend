@@ -11,7 +11,14 @@ function App(props) {
   useEffect(() => {
     checkLoginStatus();
   }, [])
-  
+
+  useDidShow(() => {
+    Taro.showShareMenu({
+      withShareTicket: true,
+      menus: ["shareAppMessage"],
+    });
+  });
+
   // Register share functionality
   useShareAppMessage(async () => {
     return {

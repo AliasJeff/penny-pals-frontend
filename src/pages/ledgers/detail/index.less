@@ -270,4 +270,46 @@
     line-height: 1.6;
     margin-bottom: 4px;
   }
+}
+
+/* Share Guide Overlay Styles */
+.share-guide-overlay {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+}
+
+.share-guide-arrow {
+  position: fixed;
+  top: 20px;
+  right: 50px;
+  animation: bounce 1.5s infinite;
+}
+
+.share-guide-text {
+  margin-top: 80px;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.share-guide-text text {
+  color: #fff;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 } 

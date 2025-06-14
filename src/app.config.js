@@ -25,6 +25,7 @@ export default defineAppConfig({
     navigationBarTextStyle: 'white',
     enableShareAppMessage: true,
     enableShareTimeline: true,
+    requiredBackgroundModes: ['share']
   },
   tabBar: {
     color: '#999999',
@@ -61,5 +62,6 @@ export default defineAppConfig({
         // selectedIconPath: 'assets/icons/profile-active.png'
       }
     ]
-  }
+  },
+  requiredBackgroundModes: ['share']
 })
