@@ -1,60 +1,263 @@
 .statistics-page {
-  background-color: #f5f5f5;
+  padding: 20px 16px;
+  background-color: #f8f8f8;
   min-height: 100vh;
-  padding-bottom: 60px;
 }
 
 .statistics-header {
-  background-color: #4670FF;
-  padding: 40px 20px 20px;
-  color: #FFFFFF;
-  border-radius: 0 0 20px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
   
-  &__title {
-    font-size: 20px;
-    font-weight: 500;
+  .view-mode-toggle {
+    display: flex;
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin-right: 10px;
+    
+    .view-mode-option {
+      padding: 6px 20px;
+      font-size: 14px;
+      color: #666;
+      cursor: pointer;
+      border-radius: 16px;
+      transition: all 0.3s;
+
+      &.active {
+        background-color: #4670FF;
+        color: #fff;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .period-selector {
+    display: flex;
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    
+    .period-option {
+      padding: 6px 20px;
+      font-size: 14px;
+      color: #666;
+      cursor: pointer;
+      border-radius: 16px;
+      transition: all 0.3s;
+
+      &.active {
+        background-color: #4670FF;
+        color: #fff;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .statistics-chart-icon {
+    width: 36px;
+    height: 36px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+
+    .chart-icon-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 3px solid #333;
+      border-left-color: transparent;
+    }
   }
 }
 
-.statistics-date-range {
-  margin: 0 16px 16px;
-  background-color: #FFFFFF;
-  border-radius: 8px;
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.period-tabs-container {
+  margin-bottom: 20px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 5px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .period-tabs {
+    display: flex;
+    min-width: min-content;
+
+    .period-tab {
+      padding: 8px 20px;
+      font-size: 14px;
+      color: #666;
+      cursor: pointer;
+      white-space: nowrap;
+      position: relative;
+      
+      &.active {
+        color: #4670FF;
+        font-weight: 500;
+        
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -2px;
+          left: 25%;
+          width: 50%;
+          height: 3px;
+          background-color: #4670FF;
+          border-radius: 2px;
+        }
+      }
+    }
+  }
+}
+
+.statistics-summary {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   
-  &__text {
+  .statistics-total, .statistics-average {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 8px;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  .statistics-label {
     font-size: 14px;
+    color: #666;
     margin-right: 8px;
   }
+  
+  .statistics-value {
+    font-size: 24px;
+    font-weight: 500;
+    color: #4670FF;
+    
+    &.statistics-income-value {
+      color: #2DAC4A; // Green color for income
+    }
+  }
+  
+  .statistics-average .statistics-value {
+    font-size: 20px;
+  }
 }
 
-.statistics-placeholder {
-  margin: 80px 16px;
-  padding: 40px;
-  background-color: #FFFFFF;
+.statistics-chart {
+  background-color: #fff;
   border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  height: 230px;
+}
+
+.statistics-ranking {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   
-  &__icon {
-    margin-bottom: 16px;
-  }
-  
-  &__text {
-    font-size: 18px;
+  .ranking-title {
+    font-size: 16px;
     font-weight: 500;
-    color: #333333;
-    margin-bottom: 8px;
+    margin-bottom: 20px;
+    display: block;
   }
   
-  &__subtext {
-    font-size: 14px;
-    color: #999999;
+  .ranking-list {
+    .ranking-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 24px;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
+      .ranking-item-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #f5f5f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        flex-shrink: 0;
+        
+        .ranking-category-icon {
+          font-size: 20px;
+          color: #666;
+        }
+      }
+      
+      .ranking-item-info {
+        flex: 1;
+        margin-right: 12px;
+        
+        .ranking-item-top {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 6px;
+          
+          .ranking-category-name {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+          }
+          
+          .ranking-category-percent {
+            font-size: 14px;
+            color: #666;
+          }
+        }
+        
+        .ranking-progress {
+          height: 5px;
+          background-color: #f5f5f5;
+          border-radius: 3px;
+          overflow: hidden;
+          
+          .ranking-progress-bar {
+            height: 100%;
+            background-color: #4670FF;
+            border-radius: 3px;
+            
+            &.income-bar {
+              background-color: #2DAC4A; // Green color for income progress bar
+            }
+          }
+        }
+      }
+      
+      .ranking-item-amount {
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        flex-shrink: 0;
+        
+        &.income-amount {
+          color: #2DAC4A; // Green color for income amounts
+        }
+      }
+    }
   }
+}
+
+.statistics-skeleton {
+  padding: 20px 0;
 } 
