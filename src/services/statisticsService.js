@@ -1,5 +1,6 @@
 import { post } from "./request";
 import { formatDate } from "../utils/dateUtils";
+import { getCategoryIcon } from "../utils/categoryUtils";
 
 /**
  * Statistics related API services
@@ -164,7 +165,6 @@ const processCategoryRanking = (entries) => {
       categoryMap[category] = {
         category,
         amount: 0,
-        icon: entry.categoryIcon || "...",
         count: 0,
       };
     }

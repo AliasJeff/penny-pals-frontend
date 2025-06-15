@@ -1,6 +1,7 @@
 import React from "react";
-import { View, Text } from "@tarojs/components";
+import { View, Text, Image } from "@tarojs/components";
 import { formatDate } from "../../utils/dateUtils";
+import { getCategoryIcon } from "../../utils/categoryUtils";
 import "./index.less";
 import Taro from "@tarojs/taro";
 
@@ -39,12 +40,17 @@ const EntryItem = ({ entry, onTap, onChange }) => {
     }
   };
 
+  // Get the appropriate category icon
+  const categoryIcon = getCategoryIcon(category);
+
   return (
     <View className="entry-item" onClick={handleTap}>
       <View className="entry-item__icon-container">
-        <Text className="entry-item__icon">
-          {icon || category.substring(0, 1)}
-        </Text>
+        <Image
+          className="entry-item__icon-image"
+          src={categoryIcon}
+          mode="aspectFit"
+        />
       </View>
 
       <View className="entry-item__content">

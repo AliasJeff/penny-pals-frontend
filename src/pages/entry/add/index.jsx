@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text } from "@tarojs/components";
+import { View, Text, Image } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import {
   Form,
@@ -13,6 +13,7 @@ import {
   NumberKeyboard,
 } from "@nutui/nutui-react-taro";
 import { ledgerService, entryService } from "../../../services";
+import { getCategoriesByType } from "../../../utils/categoryUtils";
 import "./index.less";
 import { useDatePicker } from "../../../utils/dateUtils";
 
@@ -31,31 +32,9 @@ const AddEntry = () => {
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Expense categories
-  const expenseCategories = [
-    "餐饮",
-    "购物",
-    "日用",
-    "交通",
-    "娱乐",
-    "医疗",
-    "住房",
-    "通讯",
-    "学习",
-    "人情",
-    "其他",
-  ];
-
-  // Income categories
-  const incomeCategories = [
-    "工资",
-    "奖金",
-    "兼职",
-    "理财",
-    "报销",
-    "红包",
-    "其他",
-  ];
+  // Get categories with icons based on type
+  const expenseCategories = getCategoriesByType("expense");
+  const incomeCategories = getCategoriesByType("income");
 
   // Get current categories based on type
   const currentCategories =
@@ -230,17 +209,24 @@ const AddEntry = () => {
       <View className="add-entry-categories">
         <View className="add-entry-categories__title">分类</View>
         <View className="add-entry-categories__list">
-          {currentCategories.map((category) => (
+          {currentCategories.map((categoryItem) => (
             <View
-              key={category}
+              key={categoryItem.name}
               className={`add-entry-categories__item ${
-                form.category === category
+                form.category === categoryItem.name
                   ? "add-entry-categories__item--active"
                   : ""
               }`}
-              onClick={() => handleCategorySelect(category)}
+              onClick={() => handleCategorySelect(categoryItem.name)}
             >
-              {category}
+              <Image
+                className="add-entry-categories__item-icon"
+                src={categoryItem.icon}
+                mode="aspectFit"
+              />
+              <Text className="add-entry-categories__item-text">
+                {categoryItem.name}
+              </Text>
             </View>
           ))}
         </View>

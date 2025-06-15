@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text } from "@tarojs/components";
+import { View, Text, Image } from "@tarojs/components";
 import Taro, { usePullDownRefresh, useDidShow } from "@tarojs/taro";
 import { Tabs, Skeleton } from "@nutui/nutui-react-taro";
 import { entryService } from "../../services";
 import statisticsService from "../../services/statisticsService";
 import { formatDate } from "../../utils/dateUtils";
+import { getCategoryIcon } from "../../utils/categoryUtils";
 import LineChart from "../../components/charts/LineChart";
 import "./index.less";
 
@@ -400,9 +401,11 @@ const Statistics = () => {
                 (category, index) => (
                   <View key={index} className="ranking-item">
                     <View className="ranking-item-icon">
-                      <Text className="ranking-category-icon">
-                        {category.icon}
-                      </Text>
+                      <Image
+                        className="ranking-category-icon"
+                        src={getCategoryIcon(category.category)}
+                        mode="aspectFit"
+                      />
                     </View>
                     <View className="ranking-item-info">
                       <View className="ranking-item-top">
