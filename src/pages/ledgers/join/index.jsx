@@ -17,32 +17,51 @@ const JoinLedger = () => {
 
   // Check login status and process invite code when component mounts
   useEffect(() => {
+    // If inviteCode is provided in URL, store it in storage
+    if (inviteCode) {
+      Taro.setStorageSync("pendingInviteCode", inviteCode);
+    }
+
+    // Get the invite code from storage if not in URL
+    const storedInviteCode = Taro.getStorageSync("pendingInviteCode");
+
     // Check if user is logged in
     if (!currentUser) {
-      // Redirect to login page with return URL
+      // Redirect to login page without parameters
       Taro.navigateTo({
-        url: `/pages/login/index?redirect=/pages/ledgers/join/index&inviteCode=${
-          inviteCode || ""
-        }`,
+        url: `/pages/login/index`,
       });
       return;
     }
 
-    // If user is logged in and has invite code, process it
-    if (inviteCode) {
-      processInviteCode();
+    // If user is logged in and has invite code (from URL or storage), process it
+    if (inviteCode || storedInviteCode) {
+      const codeToUse = inviteCode || storedInviteCode;
+      console.log(
+        "User logged in with invite code, processing invite:",
+        codeToUse
+      );
+      processInviteCode(codeToUse);
+    } else {
+      console.log("User logged in but no invite code found");
     }
-  }, [inviteCode]);
+  }, [inviteCode, currentUser]);
 
   // Join ledger with invite code
-  const processInviteCode = async () => {
+  const processInviteCode = async (codeToUse = inviteCode) => {
+    console.log("Starting to process invite code:", codeToUse);
     setLoading(true);
     setError("");
+    setSuccess(false); // Reset success state
 
     try {
-      await inviteService.joinByCode(inviteCode);
+      await inviteService.joinByCode(codeToUse);
 
+      console.log("Successfully joined ledger with invite code");
       setSuccess(true);
+
+      // Clear the stored invite code after successful processing
+      Taro.removeStorageSync("pendingInviteCode");
 
       // Show success message
       Taro.showToast({
@@ -53,13 +72,14 @@ const JoinLedger = () => {
 
       // Navigate to the ledger detail page after successful join
       setTimeout(() => {
-        Taro.redirectTo({
+        Taro.switchTab({
           url: `/pages/home/index`,
         });
       }, 2000);
     } catch (error) {
       console.error("Error joining ledger:", error);
       setError(error.message || "加入账本失败，请重试");
+      setSuccess(false);
 
       // Show error toast
       Taro.showToast({
@@ -114,7 +134,14 @@ const JoinLedger = () => {
         {success && (
           <View className="join-ledger-success">
             <Text className="join-ledger-success-title">成功加入账本</Text>
-            <Text className="join-ledger-success-desc">正在跳转到账本...</Text>
+            <Text className="join-ledger-success-desc">正在跳转...</Text>
+            <Button
+              type="primary"
+              className="join-ledger-button"
+              onClick={() => Taro.switchTab({ url: "/pages/home/index" })}
+            >
+              立即前往主页
+            </Button>
           </View>
         )}
 

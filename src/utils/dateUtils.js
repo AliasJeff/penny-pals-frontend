@@ -66,10 +66,6 @@ export const getRelativeTimeDesc = (date) => {
     return '今天';
   } else if (diffDays === 1) {
     return '昨天';
-  } else if (diffDays === 2) {
-    return '前天';
-  } else if (diffDays > 2 && diffDays <= 7) {
-    return `${diffDays}天前`;
   } else {
     return formatDate(d);
   }

@@ -15,10 +15,10 @@ import {
 } from "@nutui/nutui-react-taro";
 import { Share, Setting, ArrowUp } from "@nutui/icons-react-taro";
 import { ledgerService, entryService, inviteService } from "../../../services";
-import EntryItem from "../../../components/EntryItem";
 import EntryModal from "../../../components/EntryModal";
 import FloatingButton from "../../../components/FloatingButton";
 import InvitePopup from "../../../components/InvitePopup";
+import LedgerEntries from "../../../components/LedgerEntries";
 import { getRelativeTimeDesc } from "../../../utils/dateUtils";
 import "./index.less";
 
@@ -59,6 +59,49 @@ const LedgerDetail = () => {
       // Fetch ledger details
       const ledgerData = await ledgerService.getLedgerDetail(id);
       setLedger(ledgerData);
+      // {
+      //   "createTime": "",
+      //   "deleteTime": "",
+      //   "description": "",
+      //   "entries": [
+      //     {
+      //       "amount": 0,
+      //       "category": "",
+      //       "createTime": "",
+      //       "date": "",
+      //       "deleteTime": "",
+      //       "icon": "",
+      //       "id": 0,
+      //       "ledgerId": 0,
+      //       "note": "",
+      //       "type": "",
+      //       "updateTime": "",
+      //       "userId": 0
+      //     }
+      //   ],
+      //   "icon": "",
+      //   "id": 0,
+      //   "members": [
+      //     {
+      //       "avatar": "",
+      //       "birthday": "",
+      //       "createTime": "",
+      //       "deleteTime": "",
+      //       "email": "",
+      //       "id": 0,
+      //       "ledgerId": 0,
+      //       "openId": "",
+      //       "phoneNumber": "",
+      //       "role": "",
+      //       "unionId": "",
+      //       "updateTime": "",
+      //       "userId": 0,
+      //       "username": ""
+      //     }
+      //   ],
+      //   "name": "",
+      //   "updateTime": ""
+      // }
 
       // Process entries if they exist in the detail API response
       if (ledgerData.entries && Array.isArray(ledgerData.entries)) {
@@ -240,27 +283,7 @@ const LedgerDetail = () => {
     }
   };
 
-  // Group entries by date
-  const groupEntriesByDate = (entries) => {
-    if (!entries || entries.length === 0) return [];
-
-    const groups = {};
-    entries.forEach((entry) => {
-      // Get date part only
-      const dateStr = entry.date?.split("T")[0] || entry.date;
-      if (!groups[dateStr]) {
-        groups[dateStr] = [];
-      }
-      groups[dateStr].push(entry);
-    });
-
-    // Convert to array of { date, entries } objects
-    return Object.keys(groups).map((date) => ({
-      date,
-      relativeDate: getRelativeTimeDesc(date),
-      entries: groups[date],
-    }));
-  };
+  // Moved groupEntriesByDate function to LedgerEntries component
 
   // Render loading skeleton
   const renderSkeleton = () => (
@@ -383,25 +406,11 @@ const LedgerDetail = () => {
             className="ledger-detail-tabs"
           >
             <Tabs.TabPane title="明细" value="1">
-              {entries.length > 0 ? (
-                groupEntriesByDate(entries).map((group) => (
-                  <View
-                    className="ledger-detail-entries-group"
-                    key={group.date}
-                  >
-                    <View className="ledger-detail-entries-group__header"></View>
-                    {group.entries.map((entry) => (
-                      <EntryItem
-                        key={entry.id}
-                        entry={entry}
-                        onTap={handleEntryTap}
-                      />
-                    ))}
-                  </View>
-                ))
-              ) : (
-                <Empty description="暂无记账记录" />
-              )}
+              <LedgerEntries
+                entries={entries}
+                onEntryTap={handleEntryTap}
+                users={users}
+              />
             </Tabs.TabPane>
             <Tabs.TabPane title="成员" value="2">
               <View className="ledger-detail-members">

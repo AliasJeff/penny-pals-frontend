@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { View, Text } from "@tarojs/components";
-import Taro, { useDidShow, useShareAppMessage } from "@tarojs/taro";
+import Taro, {
+  useDidShow,
+  useShareAppMessage,
+  usePullDownRefresh,
+} from "@tarojs/taro";
 import { Empty, Dialog, Skeleton, Swiper } from "@nutui/nutui-react-taro";
 import { Plus } from "@nutui/icons-react-taro";
 import { ledgerService } from "../../services";
@@ -12,12 +16,22 @@ import "./index.less";
 const Ledgers = () => {
   const [ledgers, setLedgers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [stats, setStats] = useState({ ledgerCount: 0, entryCount: 0 });
   const [showJoinPopup, setShowJoinPopup] = useState(false);
 
   // Fetch ledgers when page shows
   useDidShow(() => {
     fetchLedgers();
+  });
+
+  // Handle pull-down refresh
+  usePullDownRefresh(() => {
+    setRefreshing(true);
+    fetchLedgers().finally(() => {
+      setRefreshing(false);
+      Taro.stopPullDownRefresh();
+    });
   });
 
   // Register share functionality
@@ -30,7 +44,7 @@ const Ledgers = () => {
 
   // Fetch user's ledgers
   const fetchLedgers = async () => {
-    setLoading(true);
+    if (!refreshing) setLoading(true);
     try {
       const data = await ledgerService.getMyLedgersDetail();
       setLedgers(data || []);
@@ -92,11 +106,22 @@ const Ledgers = () => {
   return (
     <View className="ledgers-page">
       <View className="ledgers-header">
-        <Text className="ledgers-header__title">我的账本</Text>
-        <View className="ledgers-header__stats">
-          <Text className="ledgers-header__stats-text">
-            {stats.ledgerCount}个账本 · {stats.entryCount}笔记录
-          </Text>
+        <View className="ledgers-header__left">
+          <Text className="ledgers-header__title">我的账本</Text>
+          <View className="ledgers-header__stats">
+            <Text className="ledgers-header__stats-text">
+              {stats.ledgerCount}个账本 · {stats.entryCount}笔记录
+            </Text>
+          </View>
+        </View>
+        <View className="ledgers-header__right">
+          <View className="button" onClick={handleCreateLedger}>
+            <Plus size={16} />
+            <Text>创建</Text>
+          </View>
+          <View className="button2" onClick={handleJoinLedger}>
+            <Text>加入</Text>
+          </View>
         </View>
       </View>
 
@@ -118,17 +143,11 @@ const Ledgers = () => {
             <View className="ledgers-empty">
               <Empty description="暂无账本" imageSize={100} />
               <View className="ledgers-empty__actions">
-                <View
-                  className="ledgers-empty__button"
-                  onClick={handleCreateLedger}
-                >
+                <View className="button" onClick={handleCreateLedger}>
                   <Plus size={16} />
                   <Text>创建账本</Text>
                 </View>
-                <View
-                  className="ledgers-empty__button2"
-                  onClick={handleJoinLedger}
-                >
+                <View className="button2" onClick={handleJoinLedger}>
                   <Text>加入账本</Text>
                 </View>
               </View>
@@ -138,7 +157,7 @@ const Ledgers = () => {
       )}
 
       {/* Floating button to create new ledger */}
-      <FloatingButton onClick={handleCreateLedger} />
+      {/* <FloatingButton onClick={handleCreateLedger} /> */}
 
       {/* Join Popup for joining ledger by invite code */}
       <JoinPopup visible={showJoinPopup} onClose={handleJoinPopupClose} />

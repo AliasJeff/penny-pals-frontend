@@ -37,6 +37,7 @@ export default function request(options) {
           // Handle different error codes
           switch (code) {
             case 401:
+            case 40100:
               // Unauthorized, clear token and redirect to login
               Taro.removeStorageSync('token');
               Taro.navigateTo({ url: '/pages/login/index' });

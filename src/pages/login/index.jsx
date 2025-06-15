@@ -7,8 +7,6 @@ import "./index.less";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const { redirect, inviteCode } = router.params;
 
   // Handle WeChat login
   const handleWeChatLogin = async () => {
@@ -31,16 +29,15 @@ const Login = () => {
       // Save token
       if (userData && userData.token) {
         Taro.setStorageSync("token", userData.token);
+        Taro.setStorageSync("currentUser", userData);
 
-        // Check if there's a redirect parameter
-        if (redirect) {
-          // If redirect has inviteCode parameter, add it to the URL
-          const redirectUrl = inviteCode
-            ? `${redirect}?inviteCode=${inviteCode}`
-            : redirect;
+        // Check if there's a pending invite code
+        const pendingInviteCode = Taro.getStorageSync("pendingInviteCode");
 
+        if (pendingInviteCode) {
+          // Navigate to join page - the code will be retrieved from storage there
           Taro.reLaunch({
-            url: redirectUrl,
+            url: "/pages/ledgers/join/index",
           });
         } else {
           // Navigate to home page by default
@@ -52,7 +49,6 @@ const Login = () => {
         throw new Error("登录失败，请重试");
       }
     } catch (error) {
-      console.error("Login error:", error);
       Taro.showToast({
         title: error.message || "登录失败，请重试",
         icon: "none",

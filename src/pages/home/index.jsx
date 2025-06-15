@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView } from '@tarojs/components';
-import Taro, { useDidShow } from '@tarojs/taro';
-import { Avatar, Empty, Skeleton, Tabs } from '@nutui/nutui-react-taro';
-import { userService, ledgerService, entryService } from '../../services';
-import FloatingButton from '../../components/FloatingButton';
-import LedgerCard from '../../components/LedgerCard';
-import EntryItem from '../../components/EntryItem';
-import EntryModal from '../../components/EntryModal';
-import { getRelativeTimeDesc } from '../../utils/dateUtils';
-import './index.less';
+import React, { useState } from "react";
+import { View, Text, ScrollView } from "@tarojs/components";
+import Taro, { useDidShow, usePullDownRefresh } from "@tarojs/taro";
+import { Avatar, Empty, Skeleton, Tabs } from "@nutui/nutui-react-taro";
+import { userService, ledgerService, entryService } from "../../services";
+import FloatingButton from "../../components/FloatingButton";
+import LedgerCard from "../../components/LedgerCard";
+import EntryItem from "../../components/EntryItem";
+import EntryModal from "../../components/EntryModal";
+import { getRelativeTimeDesc } from "../../utils/dateUtils";
+import "./index.less";
 
 const Home = () => {
   const [user, setUser] = useState(null);
@@ -16,23 +16,56 @@ const Home = () => {
   const [ledgers, setLedgers] = useState([]);
   const [recentEntries, setRecentEntries] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('1');
+  const [refreshing, setRefreshing] = useState(false);
+  const [activeTab, setActiveTab] = useState("1");
   const [showEntryModal, setShowEntryModal] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [stats, setStats] = useState({ ledgerCount: 0, entryCount: 0 });
 
+  const checkLoginStatus = () => {
+    try {
+      const token = Taro.getStorageSync("token");
+      const currentUser = Taro.getStorageSync("currentUser");
+
+      // 如果没有token，跳转到登录页
+      if (!token || !currentUser) {
+        const currentPath = Taro.getCurrentPages();
+
+        // 如果当前不在登录页，则跳转到登录页
+        if (
+          currentPath.length === 0 ||
+          currentPath[0].route !== "pages/login/index"
+        ) {
+          Taro.reLaunch({ url: "/pages/login/index" });
+        }
+      }
+    } catch (error) {
+      console.error("Check login status error:", error);
+    }
+  };
+
   // Fetch data when page shows
   useDidShow(() => {
+    checkLoginStatus();
     fetchData();
+  });
+
+  // Handle pull-down refresh
+  usePullDownRefresh(() => {
+    setRefreshing(true);
+    fetchData().finally(() => {
+      setRefreshing(false);
+      Taro.stopPullDownRefresh();
+    });
   });
 
   // Fetch all required data
   const fetchData = async () => {
-    setLoading(true);
+    if (!refreshing) setLoading(true);
     try {
       // Fetch user info
       const userData = await userService.getCurrentUser();
-      Taro.setStorageSync('currentUser', userData);
+      Taro.setStorageSync("currentUser", userData);
       setUser(userData);
 
       // Fetch ledgers with detailed info
@@ -41,30 +74,32 @@ const Home = () => {
 
       // Calculate ledger stats
       if (ledgersData && ledgersData.length > 0) {
-        const totalEntries = ledgersData.reduce((sum, ledger) => 
-          sum + (ledger.entries?.length || 0), 0);
-        
+        const totalEntries = ledgersData.reduce(
+          (sum, ledger) => sum + (ledger.entries?.length || 0),
+          0
+        );
+
         setStats({
           ledgerCount: ledgersData.length,
-          entryCount: totalEntries
+          entryCount: totalEntries,
         });
       }
 
       // Fetch recent entries
       const entries = await entryService.listMyEntries({
-        orderBy: 'date',
-        orderDirection: 'desc',
-        pageSize: 10
+        orderBy: "date",
+        orderDirection: "desc",
+        pageSize: 10,
       });
       setRecentEntries(entries || []);
 
       // Calculate balance (simplified for now)
       calculateBalance(entries);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
       Taro.showToast({
-        title: '加载数据失败，请重试',
-        icon: 'none'
+        title: "加载数据失败，请重试",
+        icon: "none",
       });
     } finally {
       setLoading(false);
@@ -79,9 +114,9 @@ const Home = () => {
     }
 
     const total = entries.reduce((acc, entry) => {
-      if (entry.type === 'income') {
+      if (entry.type === "income") {
         return acc + entry.amount;
-      } else if (entry.type === 'expense') {
+      } else if (entry.type === "expense") {
         return acc - entry.amount;
       }
       return acc;
@@ -112,9 +147,9 @@ const Home = () => {
     if (!entries || entries.length === 0) return [];
 
     const groups = {};
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
       // Get date part only
-      const dateStr = entry.date?.split('T')[0] || entry.date;
+      const dateStr = entry.date?.split("T")[0] || entry.date;
       if (!groups[dateStr]) {
         groups[dateStr] = [];
       }
@@ -122,10 +157,10 @@ const Home = () => {
     });
 
     // Convert to array of { date, entries } objects
-    return Object.keys(groups).map(date => ({
+    return Object.keys(groups).map((date) => ({
       date,
       relativeDate: getRelativeTimeDesc(date),
-      entries: groups[date]
+      entries: groups[date],
     }));
   };
 
@@ -148,15 +183,26 @@ const Home = () => {
           {/* User info and balance */}
           <View className="home-header">
             <View className="home-header__user">
-              <Avatar style={{ backgroundClip: '#ff0f23', color: '#5272f9', fontSize: '20px', fontWeight: 700 }}>
-                {user?.username?.substring(0, 1) || '...'}
+              <Avatar
+                style={{
+                  backgroundClip: "#ff0f23",
+                  color: "#5272f9",
+                  fontSize: "20px",
+                  fontWeight: 700,
+                }}
+              >
+                {user?.username?.substring(0, 1) || "..."}
               </Avatar>
-              <Text className="home-header__username">{user?.username || '用户'}</Text>
+              <Text className="home-header__username">
+                {user?.username || "用户"}
+              </Text>
             </View>
             <View className="home-header__balance">
               <View className="home-header__balance-info">
                 <Text className="home-header__balance-label">当前余额</Text>
-                <Text className="home-header__balance-amount">¥ {balance.toFixed(2)}</Text>
+                <Text className="home-header__balance-amount">
+                  ¥ {balance.toFixed(2)}
+                </Text>
               </View>
               {/* <View className="home-header__stats">
                 <Text className="home-header__stats-text">
@@ -165,49 +211,43 @@ const Home = () => {
               </View> */}
             </View>
           </View>
-          
+
           {/* My Ledgers */}
           <View className="home-section">
             <View className="home-section__header">
               <Text className="home-section__title">我的账本</Text>
-              <Text 
+              <Text
                 className="home-section__more"
-                onClick={() => Taro.switchTab({ url: '/pages/ledgers/index' })}
+                onClick={() => Taro.switchTab({ url: "/pages/ledgers/index" })}
               >
                 查看全部
               </Text>
             </View>
-            
-            <ScrollView 
-              className="home-ledgers"
-              scrollX
-              showScrollbar={false}
-            >
+
+            <ScrollView className="home-ledgers" scrollX showScrollbar={false}>
               {ledgers.length > 0 ? (
-                ledgers.slice(0, 5).map(ledger => (
+                ledgers.slice(0, 5).map((ledger) => (
                   <View className="home-ledgers__item" key={ledger.id}>
                     <LedgerCard ledger={ledger} />
                   </View>
                 ))
               ) : (
                 <View className="home-ledgers__empty">
-                  <Empty 
-                    description="还没有账本，快去创建一个吧" 
-                  />
+                  <Empty description="还没有账本，快去创建一个吧" />
                 </View>
               )}
             </ScrollView>
           </View>
-          
+
           {/* Recent Entries */}
           <View className="home-section">
             <View className="home-section__header">
               <Text className="home-section__title">最近记账</Text>
             </View>
-            
-            <Tabs 
-              value={activeTab} 
-              onChange={value => setActiveTab(value)}
+
+            <Tabs
+              value={activeTab}
+              onChange={(value) => setActiveTab(value)}
               type="smile"
               className="home-tabs"
             >
@@ -220,10 +260,10 @@ const Home = () => {
                           {group.relativeDate}
                         </Text> */}
                       </View>
-                      {group.entries.map(entry => (
-                        <EntryItem 
-                          key={entry.id} 
-                          entry={entry} 
+                      {group.entries.map((entry) => (
+                        <EntryItem
+                          key={entry.id}
+                          entry={entry}
                           onTap={handleEntryTap}
                         />
                       ))}
@@ -234,18 +274,21 @@ const Home = () => {
                 )}
               </Tabs.TabPane>
               <Tabs.TabPane title="支出" value="2">
-                {recentEntries.filter(e => e.type === 'expense').length > 0 ? (
-                  groupEntriesByDate(recentEntries.filter(e => e.type === 'expense')).map(group => (
+                {recentEntries.filter((e) => e.type === "expense").length >
+                0 ? (
+                  groupEntriesByDate(
+                    recentEntries.filter((e) => e.type === "expense")
+                  ).map((group) => (
                     <View className="home-entries-group" key={group.date}>
                       <View className="home-entries-group__header">
                         {/* <Text className="home-entries-group__date">
                           {group.relativeDate}
                         </Text> */}
                       </View>
-                      {group.entries.map(entry => (
-                        <EntryItem 
-                          key={entry.id} 
-                          entry={entry} 
+                      {group.entries.map((entry) => (
+                        <EntryItem
+                          key={entry.id}
+                          entry={entry}
                           onTap={handleEntryTap}
                         />
                       ))}
@@ -256,18 +299,20 @@ const Home = () => {
                 )}
               </Tabs.TabPane>
               <Tabs.TabPane title="收入" value="3">
-                {recentEntries.filter(e => e.type === 'income').length > 0 ? (
-                  groupEntriesByDate(recentEntries.filter(e => e.type === 'income')).map(group => (
+                {recentEntries.filter((e) => e.type === "income").length > 0 ? (
+                  groupEntriesByDate(
+                    recentEntries.filter((e) => e.type === "income")
+                  ).map((group) => (
                     <View className="home-entries-group" key={group.date}>
                       <View className="home-entries-group__header">
                         {/* <Text className="home-entries-group__date">
                           {group.relativeDate}
                         </Text> */}
                       </View>
-                      {group.entries.map(entry => (
-                        <EntryItem 
-                          key={entry.id} 
-                          entry={entry} 
+                      {group.entries.map((entry) => (
+                        <EntryItem
+                          key={entry.id}
+                          entry={entry}
                           onTap={handleEntryTap}
                         />
                       ))}
@@ -281,12 +326,12 @@ const Home = () => {
           </View>
         </>
       )}
-      
+
       {/* Floating button for quick entry */}
-      <FloatingButton onClick={handleAddEntry} />
+      <FloatingButton icon="add" onClick={handleAddEntry} />
 
       {/* Entry Modal - for both Add and Edit */}
-      <EntryModal 
+      <EntryModal
         visible={showEntryModal}
         onClose={() => setShowEntryModal(false)}
         onSuccess={handleEntryChange}
@@ -296,4 +341,4 @@ const Home = () => {
   );
 };
 
-export default Home; 
+export default Home;

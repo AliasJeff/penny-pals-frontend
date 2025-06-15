@@ -19,13 +19,14 @@ export default defineAppConfig({
     'pages/login/index'
   ],
   window: {
-    backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#4670FF',
     navigationBarTitleText: '记账小星球🌍',
     navigationBarTextStyle: 'white',
     enableShareAppMessage: true,
     enableShareTimeline: true,
-    requiredBackgroundModes: ['share']
+    requiredBackgroundModes: ['share'],
+    enablePullDownRefresh: true,
+    backgroundTextStyle: 'dark'
   },
   tabBar: {
     color: '#999999',
@@ -63,5 +64,24 @@ export default defineAppConfig({
       }
     ]
   },
-  requiredBackgroundModes: ['share']
+  requiredBackgroundModes: ['share'],
+  // 配置每个页面的窗口表现
+  pageConfig: {
+    'pages/home/index': {
+      enablePullDownRefresh: true,
+      backgroundTextStyle: 'dark'
+    },
+    'pages/ledgers/index': {
+      enablePullDownRefresh: true,
+      backgroundTextStyle: 'dark'
+    },
+    'pages/statistics/index': {
+      enablePullDownRefresh: true,
+      backgroundTextStyle: 'dark'
+    },
+    'pages/profile/index': {
+      enablePullDownRefresh: true,
+      backgroundTextStyle: 'dark'
+    }
+  }
 })

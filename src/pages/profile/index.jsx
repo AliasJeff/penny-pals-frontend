@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Image } from "@tarojs/components";
-import Taro, { useDidShow } from "@tarojs/taro";
+import Taro, { useDidShow, usePullDownRefresh } from "@tarojs/taro";
 import {
   Avatar,
   Cell,
@@ -15,6 +15,7 @@ import "./index.less";
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   // Fetch user data when page shows
@@ -22,9 +23,18 @@ const Profile = () => {
     fetchUserData();
   });
 
+  // Handle pull-down refresh
+  usePullDownRefresh(() => {
+    setRefreshing(true);
+    fetchUserData().finally(() => {
+      setRefreshing(false);
+      Taro.stopPullDownRefresh();
+    });
+  });
+
   // Fetch user data
   const fetchUserData = async () => {
-    setLoading(true);
+    if (!refreshing) setLoading(true);
     try {
       const userData = await userService.getCurrentUser();
       setUser(userData);
@@ -76,7 +86,12 @@ const Profile = () => {
                   src={user.avatar}
                 />
               ) : (
-                <Avatar size="large" background="#4670FF" color="#FFFFFF" style={{ fontSize: '24px', fontWeight: 700 }}>
+                <Avatar
+                  size="large"
+                  background="#4670FF"
+                  color="#FFFFFF"
+                  style={{ fontSize: "24px", fontWeight: 700 }}
+                >
                   {user?.username?.substring(0, 1) || "..."}
                 </Avatar>
               )}

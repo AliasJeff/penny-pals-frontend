@@ -183,7 +183,7 @@ export default {
    * @param {Number} ledgerId - ledger ID
    */
   exitLedger: (ledgerId) => {
-    return post('/api/ledger/user/exit', null, { header: { params: { ledgerId } } });
+    return post('/api/ledger/user/exit?ledgerId=' + ledgerId);
   },
   
   /**
@@ -192,7 +192,7 @@ export default {
    * @param {Number} userId - user ID
    */
   removeUserFromLedger: (ledgerId, userId) => {
-    return post('/api/ledger/user/remove', null, { header: { params: { ledgerId, userId } } });
+    return post('/api/ledger/user/remove?ledgerId=' + ledgerId + '&userId=' + userId);
   },
   
   /**
