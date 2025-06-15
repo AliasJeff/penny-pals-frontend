@@ -118,9 +118,15 @@ const EntryModal = ({ visible, onClose, onSuccess, editEntry = null }) => {
   };
 
   // Handle date selection
-  const handleDateSelect = (value) => {
+  const handleDateSelect = (dateArray) => {
+    const year = dateArray[0].value;
+    const month = dateArray[1].value;
+    const day = dateArray[2].value;
+
+    const formattedDate = `${year}-${month}-${day}`;
+
     setShowDatePicker(false);
-    setForm((prev) => ({ ...prev, date: value }));
+    setForm((prev) => ({ ...prev, date: formattedDate }));
   };
 
   // Handle ledger selection
@@ -398,11 +404,10 @@ const EntryModal = ({ visible, onClose, onSuccess, editEntry = null }) => {
       <DatePicker
         visible={showDatePicker}
         value={form.date}
-        type="date"
+        defaultValue={form.date}
         onClose={() => setShowDatePicker(false)}
         onConfirm={handleDateSelect}
         minDate="2020-01-01"
-        maxDate="2030-12-31"
       />
 
       {/* Ledger Picker */}

@@ -11,7 +11,7 @@ import {
 } from "@nutui/nutui-react-taro";
 import { Filter, ArrowDown, Close } from "@nutui/icons-react-taro";
 import EntryItem from "../EntryItem";
-import { getRelativeTimeDesc } from "../../utils/dateUtils";
+import { getRelativeTimeDesc, useDatePicker } from "../../utils/dateUtils";
 import "./index.less";
 
 // Custom Tag component
@@ -176,20 +176,44 @@ const LedgerEntries = ({ entries = [], onEntryTap, users = [] }) => {
 
     const groups = {};
     entries.forEach((entry) => {
-      // Get date part only
-      const dateStr = entry.date?.split("T")[0] || entry.date;
+      // Create a date object and ensure it uses local timezone
+      let date = new Date(entry.date);
+      // Format the date in YYYY-MM-DD format in local timezone
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const dateStr = `${year}-${month}-${day}`;
+
       if (!groups[dateStr]) {
         groups[dateStr] = [];
       }
       groups[dateStr].push(entry);
     });
 
-    // Convert to array of { date, entries } objects
-    return Object.keys(groups).map((date) => ({
-      date,
-      relativeDate: getRelativeTimeDesc(date),
-      entries: groups[date],
-    }));
+    // Convert to array of { date, entries, totalAmount } objects
+    return Object.keys(groups).map((date) => {
+      // Calculate total income and expense amounts for this date's entries
+      const { income, expense } = groups[date].reduce(
+        (acc, entry) => {
+          const amount = parseFloat(entry.amount) || 0;
+          if (entry.type === "income") {
+            acc.income += amount;
+          } else if (entry.type === "expense") {
+            acc.expense += amount;
+          }
+          return acc;
+        },
+        { income: 0, expense: 0 }
+      );
+
+      return {
+        date,
+        relativeDate: getRelativeTimeDesc(date),
+        entries: groups[date],
+        income: income.toFixed(2),
+        expense: expense.toFixed(2),
+      };
+    });
   };
 
   return (
@@ -293,6 +317,14 @@ const LedgerEntries = ({ entries = [], onEntryTap, users = [] }) => {
               <Text className="ledger-entries-group__date">
                 {group.relativeDate}
               </Text>
+              <View className="ledger-entries-group__totals">
+                {parseFloat(group.income) > 0 && (
+                  <Text>收入 ¥{group.income}</Text>
+                )}
+                {parseFloat(group.expense) > 0 && (
+                  <Text>支出 ¥{group.expense}</Text>
+                )}
+              </View>
             </View>
             {group.entries.map((entry) => (
               <EntryItem key={entry.id} entry={entry} onTap={onEntryTap} />
@@ -418,6 +450,7 @@ const LedgerEntries = ({ entries = [], onEntryTap, users = [] }) => {
         title={datePickerType === "start" ? "选择开始日期" : "选择结束日期"}
         onClose={() => setShowDatePicker(false)}
         onConfirm={handleDateConfirm}
+        defaultValue={useDatePicker(new Date())}
       />
     </View>
   );

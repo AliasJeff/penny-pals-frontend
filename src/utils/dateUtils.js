@@ -69,4 +69,13 @@ export const getRelativeTimeDesc = (date) => {
   } else {
     return formatDate(d);
   }
-}; 
+};
+
+export const useDatePicker = (initialDate) => {
+  // NutUI DatePicker expects an array format [year, month, day]
+  return [
+    { value: initialDate.getFullYear().toString() },
+    { value: (initialDate.getMonth() + 1).toString().padStart(2, '0') },
+    { value: initialDate.getDate().toString().padStart(2, '0') }
+  ];
+};

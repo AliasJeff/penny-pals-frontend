@@ -5,8 +5,8 @@ import { Avatar, Empty, Skeleton, Tabs } from "@nutui/nutui-react-taro";
 import { userService, ledgerService, entryService } from "../../services";
 import FloatingButton from "../../components/FloatingButton";
 import LedgerCard from "../../components/LedgerCard";
-import EntryItem from "../../components/EntryItem";
 import EntryModal from "../../components/EntryModal";
+import LedgerEntries from "../../components/LedgerEntries";
 import { getRelativeTimeDesc } from "../../utils/dateUtils";
 import "./index.less";
 
@@ -142,28 +142,6 @@ const Home = () => {
     fetchData();
   };
 
-  // Group entries by date
-  const groupEntriesByDate = (entries) => {
-    if (!entries || entries.length === 0) return [];
-
-    const groups = {};
-    entries.forEach((entry) => {
-      // Get date part only
-      const dateStr = entry.date?.split("T")[0] || entry.date;
-      if (!groups[dateStr]) {
-        groups[dateStr] = [];
-      }
-      groups[dateStr].push(entry);
-    });
-
-    // Convert to array of { date, entries } objects
-    return Object.keys(groups).map((date) => ({
-      date,
-      relativeDate: getRelativeTimeDesc(date),
-      entries: groups[date],
-    }));
-  };
-
   // Render loading skeleton
   const renderSkeleton = () => (
     <View className="home-skeleton">
@@ -252,75 +230,25 @@ const Home = () => {
               className="home-tabs"
             >
               <Tabs.TabPane title="全部" value="1">
-                {recentEntries.length > 0 ? (
-                  groupEntriesByDate(recentEntries).map((group, index) => (
-                    <View className="home-entries-group" key={index}>
-                      <View className="home-entries-group__header">
-                        {/* <Text className="home-entries-group__date">
-                          {group.relativeDate}
-                        </Text> */}
-                      </View>
-                      {group.entries.map((entry) => (
-                        <EntryItem
-                          key={entry.id}
-                          entry={entry}
-                          onTap={handleEntryTap}
-                        />
-                      ))}
-                    </View>
-                  ))
-                ) : (
-                  <Empty description="还没有记账记录" />
-                )}
+                <LedgerEntries
+                  entries={recentEntries}
+                  onEntryTap={handleEntryTap}
+                  users={user ? [user] : []}
+                />
               </Tabs.TabPane>
               <Tabs.TabPane title="支出" value="2">
-                {recentEntries.filter((e) => e.type === "expense").length >
-                0 ? (
-                  groupEntriesByDate(
-                    recentEntries.filter((e) => e.type === "expense")
-                  ).map((group) => (
-                    <View className="home-entries-group" key={group.date}>
-                      <View className="home-entries-group__header">
-                        {/* <Text className="home-entries-group__date">
-                          {group.relativeDate}
-                        </Text> */}
-                      </View>
-                      {group.entries.map((entry) => (
-                        <EntryItem
-                          key={entry.id}
-                          entry={entry}
-                          onTap={handleEntryTap}
-                        />
-                      ))}
-                    </View>
-                  ))
-                ) : (
-                  <Empty description="还没有支出记录" />
-                )}
+                <LedgerEntries
+                  entries={recentEntries.filter((e) => e.type === "expense")}
+                  onEntryTap={handleEntryTap}
+                  users={user ? [user] : []}
+                />
               </Tabs.TabPane>
               <Tabs.TabPane title="收入" value="3">
-                {recentEntries.filter((e) => e.type === "income").length > 0 ? (
-                  groupEntriesByDate(
-                    recentEntries.filter((e) => e.type === "income")
-                  ).map((group) => (
-                    <View className="home-entries-group" key={group.date}>
-                      <View className="home-entries-group__header">
-                        {/* <Text className="home-entries-group__date">
-                          {group.relativeDate}
-                        </Text> */}
-                      </View>
-                      {group.entries.map((entry) => (
-                        <EntryItem
-                          key={entry.id}
-                          entry={entry}
-                          onTap={handleEntryTap}
-                        />
-                      ))}
-                    </View>
-                  ))
-                ) : (
-                  <Empty description="还没有收入记录" />
-                )}
+                <LedgerEntries
+                  entries={recentEntries.filter((e) => e.type === "income")}
+                  onEntryTap={handleEntryTap}
+                  users={user ? [user] : []}
+                />
               </Tabs.TabPane>
             </Tabs>
           </View>

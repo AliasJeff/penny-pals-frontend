@@ -101,9 +101,6 @@ const Profile = () => {
               <Text className="profile-header__name">
                 {user?.username || "用户"}
               </Text>
-              <Text className="profile-header__email">
-                {user?.email || "未设置邮箱"}
-              </Text>
             </View>
           </View>
 
@@ -111,19 +108,19 @@ const Profile = () => {
           <View className="profile-menu">
             <Cell title="👤 个人资料" onClick={handleEditProfile} />
 
-            <Cell
+            {/* <Cell
               title="🔔 消息通知"
               onClick={() =>
                 Taro.navigateTo({ url: "/pages/profile/notifications/index" })
               }
-            />
+            /> */}
 
-            <Cell
+            {/* <Cell
               title="⚙️ 设置"
               onClick={() =>
                 Taro.navigateTo({ url: "/pages/profile/settings/index" })
               }
-            />
+            /> */}
 
             <Cell
               title="❓ 帮助与反馈"
@@ -132,12 +129,12 @@ const Profile = () => {
               }
             />
 
-            <Cell
+            {/* <Cell
               title="ℹ️ 关于我们"
               onClick={() =>
                 Taro.navigateTo({ url: "/pages/profile/about/index" })
               }
-            />
+            /> */}
           </View>
 
           {/* Logout Button */}

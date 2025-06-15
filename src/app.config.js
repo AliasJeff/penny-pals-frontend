@@ -11,7 +11,7 @@ export default defineAppConfig({
     'pages/ledgers/join/index',
     // 'pages/ledgers/invite/index',
     // 'pages/entry/detail/index',
-    // 'pages/profile/edit/index',
+    'pages/profile/edit/index',
     // 'pages/profile/settings/index',
     // 'pages/profile/notifications/index',
     // 'pages/profile/help/index',

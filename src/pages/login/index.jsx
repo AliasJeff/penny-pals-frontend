@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { View, Text, Image } from "@tarojs/components";
-import Taro, { useRouter } from "@tarojs/taro";
-import { Button, Toast } from "@nutui/nutui-react-taro";
+import { View, Text } from "@tarojs/components";
+import Taro from "@tarojs/taro";
+import { Button, Toast, Dialog } from "@nutui/nutui-react-taro";
 import { userService } from "../../services";
 import "./index.less";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
+  const [showAgreement, setShowAgreement] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
 
   // Handle WeChat login
   const handleWeChatLogin = async () => {
@@ -58,6 +60,37 @@ const Login = () => {
     }
   };
 
+  // Format dialog content
+  const formatDialogContent = (title, content) => {
+    const lines = content.split("\n").filter((line) => line.trim());
+    return (
+      <View>
+        <View className="dialog-title">{title}</View>
+        {lines.map((line, index) => {
+          // Check if the line starts with a number followed by a period (e.g., "1.")
+          const isListItem = /^\d+\./.test(line);
+          if (isListItem) {
+            // Split the list item into number and content
+            const [number, ...rest] = line.split(/\.\s/);
+            const itemContent = rest.join(". ");
+            return (
+              <View key={index} className="list-item">
+                <Text className="list-number">{number}.</Text>
+                <Text className="list-content">{itemContent}</Text>
+              </View>
+            );
+          } else {
+            return (
+              <View key={index} className="paragraph">
+                {line}
+              </View>
+            );
+          }
+        })}
+      </View>
+    );
+  };
+
   return (
     <View className="login-page">
       <View className="login-content">
@@ -89,11 +122,120 @@ const Login = () => {
         <View className="login-agreement">
           <Text className="login-agreement__text">
             登录即表示您已同意
-            <Text className="login-agreement__link">《用户协议》</Text>和
-            <Text className="login-agreement__link">《隐私政策》</Text>
+            <Text
+              className="login-agreement__link"
+              onClick={() => setShowAgreement(true)}
+            >
+              《用户协议》
+            </Text>
+            和
+            <Text
+              className="login-agreement__link"
+              onClick={() => setShowPrivacy(true)}
+            >
+              《隐私政策》
+            </Text>
           </Text>
         </View>
       </View>
+
+      {/* User Agreement Dialog */}
+      <Dialog
+        title="用户协议"
+        visible={showAgreement}
+        onClose={() => setShowAgreement(false)}
+        footerDirection="horizontal"
+        closeOnOverlayClick
+        content={
+          <View className="agreement-content">
+            {formatDialogContent(
+              "用户协议",
+              `
+欢迎使用记账小星球！
+
+1. 接受条款
+   使用我们的服务，即表示您同意本用户协议的全部条款。
+
+2. 服务说明
+   记账小星球提供在线记账及财务管理服务，帮助用户跟踪个人和共享账簿的收支情况。
+
+3. 用户责任
+   用户应当提供真实、准确的信息，并对账户安全负责。
+
+4. 隐私保护
+   我们重视用户隐私，详情请参阅隐私政策。
+
+5. 服务变更与终止
+   我们保留随时修改或终止服务的权利，并会尽可能提前通知用户。
+
+6. 免责声明
+   我们不对因用户使用服务而产生的任何损失负责。
+
+7. 适用法律
+   本协议受中国法律管辖。
+            `
+            )}
+          </View>
+        }
+        footer={
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => setShowAgreement(false)}
+          >
+            我已阅读
+          </Button>
+        }
+      />
+
+      {/* Privacy Policy Dialog */}
+      <Dialog
+        title="隐私政策"
+        visible={showPrivacy}
+        onClose={() => setShowPrivacy(false)}
+        footerDirection="horizontal"
+        closeOnOverlayClick
+        content={
+          <View className="privacy-content">
+            {formatDialogContent(
+              "隐私政策",
+              `
+记账小星球尊重并保护所有用户的个人隐私权。
+
+1. 信息收集
+   我们可能收集您的个人信息，包括但不限于姓名、联系方式和财务数据。
+
+2. 信息使用
+   我们使用您的信息来提供、维护和改进我们的服务。
+
+3. 信息共享
+   我们不会出售、交换或转让您的个人信息给任何第三方，除非获得您的明确许可。
+
+4. 信息安全
+   我们采取合理措施保护您的个人信息安全。
+
+5. Cookie使用
+   我们的服务可能使用Cookie或类似技术来提升用户体验。
+
+6. 政策更新
+   我们可能更新本隐私政策，并会在应用内通知您重大变更。
+
+7. 联系我们
+   如有任何问题，请通过应用内的客服功能联系我们。
+            `
+            )}
+          </View>
+        }
+        footer={
+          <Button
+            type="primary"
+            size="small"
+            onClick={() => setShowPrivacy(false)}
+          >
+            我已阅读
+          </Button>
+        }
+      />
     </View>
   );
 };

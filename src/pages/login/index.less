@@ -80,4 +80,56 @@
     color: #FFFFFF;
     text-decoration: underline;
   }
+}
+
+/* Styling for the agreement and privacy policy dialogs */
+:global {
+  .nut-dialog {
+    .nut-dialog__content {
+      max-height: 60vh;
+      overflow-y: auto;
+      padding: 16px;
+      text-align: left;
+    }
+    
+    /* Dialog content styles */
+    .agreement-content,
+    .privacy-content {
+      font-size: 14px;
+      line-height: 1.5;
+      
+      .dialog-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 12px;
+        color: #333;
+        text-align: center;
+      }
+      
+      .paragraph {
+        margin-bottom: 16px;
+        color: #333;
+      }
+      
+      .list-item {
+        margin-bottom: 12px;
+        display: flex;
+        
+        .list-number {
+          font-weight: bold;
+          margin-right: 8px;
+          flex-shrink: 0;
+        }
+        
+        .list-content {
+          flex: 1;
+        }
+      }
+    }
+    
+    /* Button styles */
+    .nut-button--small {
+      min-width: 100px;
+    }
+  }
 } 
