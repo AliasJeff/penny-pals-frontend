@@ -1,14 +1,15 @@
 .ledger-card {
-  background-color: #ffffff;
+  background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   margin-bottom: 10px;
   
   &__header {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
+    gap: 12px;
   }
   
   &__icon {
@@ -18,23 +19,13 @@
     margin-right: 12px;
   }
   
-  &__avatar {
-    margin-right: 12px;
-    border-radius: 8px;
-    width: 40px !important;
-    height: 40px !important;
-  }
-  
   &__info {
     flex: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
   }
   
   &__name {
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 500;
     color: #333;
     margin-bottom: 4px;
     display: block;
@@ -42,68 +33,57 @@
   
   &__description {
     font-size: 12px;
-    color: #666;
+    color: #999;
     display: block;
   }
   
-  // Statistics styles
   &__stats {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
+    margin-bottom: 6px;
     padding: 10px 0;
-    border-top: 1px solid #f0f0f0;
-    border-bottom: 1px solid #f0f0f0;
-    margin-bottom: 4px;
+    border-top: 1px solid #f5f5f5;
+    border-bottom: 1px solid #f5f5f5;
+    
+    &-item {
+      flex: 1;
+      text-align: center;
+    }
+    
+    &-value {
+      font-size: 16px;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 4px;
+      display: block;
+    }
+    
+    &-label {
+      font-size: 12px;
+      color: #999;
+      display: block;
+    }
   }
   
-  &__stats-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  &__stats-value {
-    font-size: 14px;
-    font-weight: 600;
-    color: #333;
-  }
-  
-  &__stats-label {
-    font-size: 12px;
-    color: #999;
-    margin-top: 2px;
-  }
-  
-  // Members styles
   &__members {
     display: flex;
     align-items: center;
-    padding-top: 4px;
-    flex-wrap: wrap;
-  }
-  
-  &__members-avatars {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    
+    &-avatars {
+      display: flex;
+    }
   }
   
   &__member-avatar {
-    margin-right: 6px !important;
-    margin-bottom: 4px !important;
+    margin-right: -8px;
     border: 1px solid #fff;
   }
   
-  &__members-more {
-    font-size: 10px;
-    background: #eaeaea;
-    color: #666;
-    height: 20px;
-    width: 20px;
+  &__member-avatar-image {
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 4px;
+    margin-right: -8px;
+    border: 1px solid #fff;
   }
 } 

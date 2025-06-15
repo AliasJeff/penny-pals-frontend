@@ -1,15 +1,16 @@
 .ledger-edit-page {
-    padding: 24px 16px;
+    padding: 16px;
+    padding-bottom: 60px;
     background-color: #f7f8fa;
     min-height: 100vh;
 }
 
 .ledger-edit-header {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 
     &__title {
-        font-size: 22px;
-        font-weight: 600;
+        font-size: 18px;
+        font-weight: 500;
         color: #333;
     }
 }
@@ -22,66 +23,64 @@
 }
 
 .ledger-edit-form {
-    padding: 16px;
+    margin-bottom: 24px;
     
     .input-field {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 12px;
+        margin-bottom: 16px;
         
-        &:last-child {
-            margin-bottom: 0;
+        .input-label {
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #666;
         }
-    }
-    
-    .input-label {
-        display: flex;
-        font-size: 14px;
-        color: #333;
     }
 }
 
 .ledger-edit-submit {
-    padding: 16px;
-    margin-top: 16px;
+    margin-top: 24px;
 }
 
 .ledger-edit-members {
-    padding: 16px;
-}
-
-.ledger-edit-members-list {
-    margin-bottom: 24px;
-}
-
-.ledger-edit-member {
-    display: flex;
-    align-items: center;
-    padding: 16px;
-    background-color: #fff;
-    border-bottom: 1px solid #f2f2f2;
-
-    &__avatar {
-        margin-right: 12px;
+    margin-top: 16px;
+    
+    .ledger-edit-members-list {
+        margin-bottom: 24px;
     }
-
-    &__info {
-        flex: 1;
+    
+    .ledger-edit-member {
         display: flex;
-        flex-direction: column;
-    }
-
-    &__name {
-        font-size: 16px;
-        font-weight: 500;
-        color: #333;
-        margin-bottom: 4px;
-    }
-
-    &__role {
-        font-size: 14px;
-        color: #666;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f5f5f5;
+        
+        &__avatar-image {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+        
+        &__avatar {
+            margin-right: 12px;
+        }
+        
+        &__info {
+            flex: 1;
+        }
+        
+        &__name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 2px;
+            display: block;
+        }
+        
+        &__role {
+            font-size: 12px;
+            color: #999;
+            display: block;
+        }
     }
 }
 

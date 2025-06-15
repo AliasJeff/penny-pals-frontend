@@ -1,8 +1,9 @@
-import React from 'react';
-import { View, Text, Image } from '@tarojs/components';
-import Taro from '@tarojs/taro';
-import { Avatar } from '@nutui/nutui-react-taro';
-import './index.less';
+import React from "react";
+import { View, Text, Image } from "@tarojs/components";
+import Taro from "@tarojs/taro";
+import { Avatar } from "@nutui/nutui-react-taro";
+import { getAvatarSrc } from "../../utils/avatarUtils";
+import "./index.less";
 
 const LedgerCard = ({ ledger, onTap }) => {
   const { id, name, description, icon, entries = [], members = [] } = ledger;
@@ -13,11 +14,11 @@ const LedgerCard = ({ ledger, onTap }) => {
     let totalIncome = 0;
 
     if (entries && entries.length > 0) {
-      entries.forEach(entry => {
-        if (entry.type === 'expense') {
-          totalExpense += (entry.amount || 0);
-        } else if (entry.type === 'income') {
-          totalIncome += (entry.amount || 0);
+      entries.forEach((entry) => {
+        if (entry.type === "expense") {
+          totalExpense += entry.amount || 0;
+        } else if (entry.type === "income") {
+          totalIncome += entry.amount || 0;
         }
       });
     }
@@ -25,7 +26,7 @@ const LedgerCard = ({ ledger, onTap }) => {
     return {
       totalExpense,
       totalIncome,
-      entryCount: entries.length
+      entryCount: entries.length,
     };
   };
 
@@ -37,7 +38,7 @@ const LedgerCard = ({ ledger, onTap }) => {
       onTap(ledger);
     } else {
       Taro.navigateTo({
-        url: `/pages/ledgers/detail/index?id=${id}`
+        url: `/pages/ledgers/detail/index?id=${id}`,
       });
     }
   };
@@ -48,13 +49,13 @@ const LedgerCard = ({ ledger, onTap }) => {
         {icon ? (
           <Image className="ledger-card__icon" src={icon} mode="aspectFill" />
         ) : (
-          <Avatar 
+          <Avatar
             className="ledger-card__avatar"
             background="#4670FF"
             color="#ffffff"
             style={{ fontSize: 18, fontWeight: 700 }}
           >
-            {name.substring(0, 1).toUpperCase()} 
+            {name.substring(0, 1).toUpperCase()}
           </Avatar>
         )}
         <View className="ledger-card__info">
@@ -68,11 +69,15 @@ const LedgerCard = ({ ledger, onTap }) => {
       {/* Stats section */}
       <View className="ledger-card__stats">
         <View className="ledger-card__stats-item">
-          <Text className="ledger-card__stats-value">¥{stats.totalExpense.toFixed(2)}</Text>
+          <Text className="ledger-card__stats-value">
+            ¥{stats.totalExpense.toFixed(2)}
+          </Text>
           <Text className="ledger-card__stats-label">支出</Text>
         </View>
         <View className="ledger-card__stats-item">
-          <Text className="ledger-card__stats-value">¥{stats.totalIncome.toFixed(2)}</Text>
+          <Text className="ledger-card__stats-value">
+            ¥{stats.totalIncome.toFixed(2)}
+          </Text>
           <Text className="ledger-card__stats-label">收入</Text>
         </View>
         <View className="ledger-card__stats-item">
@@ -84,22 +89,28 @@ const LedgerCard = ({ ledger, onTap }) => {
       {/* Members section */}
       {members && members.length > 0 && (
         <View className="ledger-card__members">
-          <Avatar.Group
-            className="ledger-card__members-avatars"
-            max={5}
-          >
-            {members.map((member, index) => (
-              <Avatar
-                key={member.id || index}
-                size="small"
-                className="ledger-card__member-avatar"
-                background={member.role === 'owner' ? "#4670FF" : "#6C8EFF"}
-                color="#FFFFFF"
-                style={{ fontSize: 18, fontWeight: 500 }}
-              >
-                {member.username?.substring(0, 1) || '...'}
-              </Avatar>
-            ))}
+          <Avatar.Group className="ledger-card__members-avatars" max={5}>
+            {members.map((member, index) =>
+              member.avatar && getAvatarSrc(member.avatar) ? (
+                <Avatar
+                  key={member.id || index}
+                  size="small"
+                  className="ledger-card__member-avatar"
+                  src={getAvatarSrc(member.avatar)}
+                />
+              ) : (
+                <Avatar
+                  key={member.id || index}
+                  size="small"
+                  className="ledger-card__member-avatar"
+                  background={member.role === "owner" ? "#4670FF" : "#6C8EFF"}
+                  color="#FFFFFF"
+                  style={{ fontSize: 18, fontWeight: 500 }}
+                >
+                  {member.username?.substring(0, 1) || "..."}
+                </Avatar>
+              )
+            )}
           </Avatar.Group>
         </View>
       )}
@@ -107,4 +118,4 @@ const LedgerCard = ({ ledger, onTap }) => {
   );
 };
 
-export default LedgerCard; 
+export default LedgerCard;

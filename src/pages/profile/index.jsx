@@ -10,6 +10,7 @@ import {
   Skeleton,
 } from "@nutui/nutui-react-taro";
 import { userService } from "../../services";
+import { getAvatarSrc } from "../../utils/avatarUtils";
 import "./index.less";
 
 const Profile = () => {
@@ -80,10 +81,10 @@ const Profile = () => {
               className="profile-header__avatar"
               onClick={handleEditProfile}
             >
-              {user?.avatar ? (
+              {user?.avatar && getAvatarSrc(user.avatar) ? (
                 <Image
                   className="profile-header__avatar-image"
-                  src={user.avatar}
+                  src={getAvatarSrc(user.avatar)}
                 />
               ) : (
                 <Avatar

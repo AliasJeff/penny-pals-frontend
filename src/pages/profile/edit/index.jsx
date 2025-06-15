@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Image } from "@tarojs/components";
 import Taro, { useDidShow } from "@tarojs/taro";
-import { Input, Button, Avatar } from "@nutui/nutui-react-taro";
+import { Input, Button, Avatar, Popup } from "@nutui/nutui-react-taro";
 import { userService } from "../../../services";
+import { avatarOptions, getAvatarSrc } from "../../../utils/avatarUtils";
 import "./index.less";
 
 const EditProfile = () => {
@@ -15,7 +16,7 @@ const EditProfile = () => {
   });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [fileList, setFileList] = useState([]);
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
 
   // Fetch user data when page shows
   useDidShow(() => {
@@ -34,12 +35,6 @@ const EditProfile = () => {
         email: userData.email || "",
         phoneNumber: userData.phoneNumber || "",
       });
-
-      if (userData.avatar) {
-        setFileList([
-          { url: userData.avatar, status: "success", message: "Avatar" },
-        ]);
-      }
     } catch (error) {
       console.error("Error fetching user data:", error);
       Taro.showToast({
@@ -57,6 +52,24 @@ const EditProfile = () => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  // Handle avatar selection
+  const handleSelectAvatar = (avatarId) => {
+    // Update avatar in the form only
+    setForm((prev) => ({
+      ...prev,
+      avatar: avatarId,
+    }));
+
+    // Close the avatar picker
+    setShowAvatarPicker(false);
+  };
+
+  // Find the current avatar source
+  const getCurrentAvatarSrc = () => {
+    if (!form.avatar) return null;
+    return getAvatarSrc(form.avatar);
   };
 
   // Save profile changes
@@ -97,8 +110,8 @@ const EditProfile = () => {
       <View className="avatar-section">
         <Text className="section-title">头像</Text>
         <View className="avatar-uploader">
-          {form.avatar ? (
-            <Image className="avatar-preview" src={form.avatar} />
+          {getCurrentAvatarSrc() ? (
+            <Image className="avatar-preview" src={getCurrentAvatarSrc()} />
           ) : (
             <Avatar
               size="large"
@@ -109,14 +122,47 @@ const EditProfile = () => {
               {form.username?.substring(0, 1) || "用"}
             </Avatar>
           )}
-          {/* <Button
-            openType="chooseAvatar"
-            onChooseAvatar={(e) => console.log(e)}
+          <Button
+            className="choose-avatar-btn"
+            type="primary"
+            onClick={() => setShowAvatarPicker(true)}
           >
             选择头像
-          </Button> */}
+          </Button>
         </View>
       </View>
+
+      {/* Avatar Picker Popup */}
+      <Popup
+        visible={showAvatarPicker}
+        position="bottom"
+        round
+        onClose={() => setShowAvatarPicker(false)}
+        style={{ height: "60%" }}
+      >
+        <View className="avatar-picker-container">
+          <Text className="avatar-picker-title">选择头像</Text>
+          <View className="avatar-grid">
+            {avatarOptions.map((avatar) => (
+              <View
+                key={avatar.id}
+                className={`avatar-item ${
+                  form.avatar === avatar.id ? "selected" : ""
+                }`}
+                onClick={() => handleSelectAvatar(avatar.id)}
+              >
+                <Image className="avatar-option" src={avatar.src} />
+              </View>
+            ))}
+          </View>
+          <Button
+            className="close-picker-btn"
+            onClick={() => setShowAvatarPicker(false)}
+          >
+            取消
+          </Button>
+        </View>
+      </Popup>
 
       {/* Input Fields */}
       <View className="input-section">
@@ -163,19 +209,7 @@ const EditProfile = () => {
         <Button
           className="cancel-button"
           type="default"
-          // onClick={() => Taro.navigateBack()}
-          onClick={() =>
-            Taro.getUserProfile({
-              desc: "获取用户信息",
-              success: (res) => {
-                console.log(res);
-              },
-              fail: (err) => {
-                console.log("getUserProfile fail");
-                console.log(err);
-              },
-            })
-          }
+          onClick={() => Taro.navigateBack()}
         >
           取消
         </Button>

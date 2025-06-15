@@ -12,6 +12,7 @@ import {
   Popup,
   ActionSheet,
   Overlay,
+  Image,
 } from "@nutui/nutui-react-taro";
 import { Share, Setting, ArrowUp } from "@nutui/icons-react-taro";
 import { ledgerService, entryService, inviteService } from "../../../services";
@@ -20,6 +21,7 @@ import FloatingButton from "../../../components/FloatingButton";
 import InvitePopup from "../../../components/InvitePopup";
 import LedgerEntries from "../../../components/LedgerEntries";
 import { getRelativeTimeDesc } from "../../../utils/dateUtils";
+import { getAvatarSrc } from "../../../utils/avatarUtils";
 import "./index.less";
 
 const LedgerDetail = () => {
@@ -220,7 +222,8 @@ const LedgerDetail = () => {
 
   // Open invite popup
   const handleShowInvitePopup = () => {
-    setShowInvitePopup(true);
+    // setShowInvitePopup(true);
+    handleShare();
   };
 
   // Handle closing invite popup and refresh members list
@@ -417,12 +420,20 @@ const LedgerDetail = () => {
                 {users.length > 0 ? (
                   users.map((user) => (
                     <View className="ledger-detail-member" key={user.id}>
-                      <Avatar
-                        size="small"
-                        icon={user.username?.substring(0, 1) || "用"}
-                        background="#4670FF"
-                        color="#FFFFFF"
-                      />
+                      {user?.avatar && getAvatarSrc(user.avatar) ? (
+                        <Avatar src={getAvatarSrc(user.avatar)} />
+                      ) : (
+                        <Avatar
+                          style={{
+                            backgroundClip: "#ff0f23",
+                            color: "#5272f9",
+                            fontSize: "20px",
+                            fontWeight: 700,
+                          }}
+                        >
+                          {user?.username?.substring(0, 1) || "..."}
+                        </Avatar>
+                      )}
                       <View className="ledger-detail-member__info">
                         <Text className="ledger-detail-member__name">
                           {user.username}

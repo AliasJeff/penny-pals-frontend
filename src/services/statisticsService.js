@@ -24,7 +24,7 @@ export default {
         startDate: params.startDate,
         endDate: params.endDate,
         orderBy: "date",
-        orderDirection: "asc",
+        orderDirection: params.orderDirection || "asc",
       });
 
       return processStatistics(response, params);

@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView } from "@tarojs/components";
 import Taro, { useDidShow, usePullDownRefresh } from "@tarojs/taro";
-import { Avatar, Empty, Skeleton, Tabs } from "@nutui/nutui-react-taro";
+import { Avatar, Empty, Skeleton, Tabs, Image } from "@nutui/nutui-react-taro";
 import { userService, ledgerService, entryService } from "../../services";
 import FloatingButton from "../../components/FloatingButton";
 import LedgerCard from "../../components/LedgerCard";
 import EntryModal from "../../components/EntryModal";
 import LedgerEntries from "../../components/LedgerEntries";
 import { getRelativeTimeDesc } from "../../utils/dateUtils";
+import { getAvatarSrc } from "../../utils/avatarUtils";
 import "./index.less";
 
 const Home = () => {
@@ -161,16 +162,20 @@ const Home = () => {
           {/* User info and balance */}
           <View className="home-header">
             <View className="home-header__user">
-              <Avatar
-                style={{
-                  backgroundClip: "#ff0f23",
-                  color: "#5272f9",
-                  fontSize: "20px",
-                  fontWeight: 700,
-                }}
-              >
-                {user?.username?.substring(0, 1) || "..."}
-              </Avatar>
+              {user?.avatar && getAvatarSrc(user.avatar) ? (
+                <Avatar src={getAvatarSrc(user.avatar)} />
+              ) : (
+                <Avatar
+                  style={{
+                    backgroundClip: "#ff0f23",
+                    color: "#5272f9",
+                    fontSize: "20px",
+                    fontWeight: 700,
+                  }}
+                >
+                  {user?.username?.substring(0, 1) || "..."}
+                </Avatar>
+              )}
               <Text className="home-header__username">
                 {user?.username || "用户"}
               </Text>
