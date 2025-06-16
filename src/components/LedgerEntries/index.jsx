@@ -9,67 +9,11 @@ import {
   DatePicker,
   Divider,
 } from "@nutui/nutui-react-taro";
-import { Filter, ArrowDown, Close } from "@nutui/icons-react-taro";
+import { Filter, ArrowDown } from "@nutui/icons-react-taro";
 import EntryItem from "../EntryItem";
+import CustomTag from "../CustomTag";
 import { getRelativeTimeDesc, useDatePicker } from "../../utils/dateUtils";
 import "./index.less";
-
-// Custom Tag component
-const CustomTag = ({
-  children,
-  selected,
-  onClose,
-  onClick,
-  closeable = false,
-}) => {
-  const handleClick = (e) => {
-    if (onClick) {
-      onClick(e);
-    }
-  };
-
-  const handleClose = (e) => {
-    e.stopPropagation();
-    if (onClose) {
-      onClose(e);
-    }
-  };
-
-  return (
-    <View
-      className={`custom-tag ${selected ? "custom-tag-selected" : ""}`}
-      onClick={handleClick}
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        padding: "4px 10px",
-        fontSize: "12px",
-        borderRadius: "16px",
-        marginRight: "8px",
-        marginBottom: "8px",
-        backgroundColor: selected ? "#4a90e2" : "#f5f5f5",
-        color: selected ? "white" : "#333",
-        border: selected ? "none" : "1px solid #e0e0e0",
-        cursor: "pointer",
-        transition: "all 0.2s ease",
-      }}
-    >
-      <Text>{children}</Text>
-      {closeable && (
-        <View
-          onClick={handleClose}
-          style={{
-            marginLeft: "4px",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <Close size={14} color={selected ? "white" : "#999"} />
-        </View>
-      )}
-    </View>
-  );
-};
 
 const LedgerEntries = ({ entries = [], onEntryTap, users = [] }) => {
   const [filteredEntries, setFilteredEntries] = useState(entries);

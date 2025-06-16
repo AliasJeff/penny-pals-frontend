@@ -122,6 +122,19 @@
 .entry-modal-form {
   margin-bottom: 12px;
   
+  &-item {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
+    margin-bottom: 4px;
+    
+    &__label {
+      width: 60px;
+      font-size: 14px;
+      color: #666;
+    }
+  }
+  
   :global {
     .nut-form-item {
       padding: 4px 0;
@@ -131,6 +144,12 @@
     .nut-textarea {
       --nutui-textarea-padding: 8px 12px;
       --nutui-textarea-background: #f5f5f5;
+      border-radius: 8px;
+    }
+    
+    .nut-input {
+      --nutui-input-padding: 8px 12px;
+      --nutui-input-background: #f5f5f5;
       border-radius: 8px;
     }
   }
@@ -143,6 +162,7 @@
     background-color: #f5f5f5;
     padding: 0 10px;
     border-radius: 8px;
+    flex: 1;
   }
 }
 
@@ -183,4 +203,12 @@
       }
     }
   }
+}
+
+.entry-modal-note-tags {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  margin-left: 16px;
+  gap: 8px;
 } 

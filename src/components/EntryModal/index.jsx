@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, Image } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import {
-  Form,
   Button,
   DatePicker,
   Input,
@@ -13,6 +12,7 @@ import {
 } from "@nutui/nutui-react-taro";
 import { ledgerService, entryService } from "../../services";
 import { getCategoriesByType } from "../../utils/categoryUtils";
+import CustomTag from "../CustomTag";
 import "./index.less";
 
 const EntryModal = ({ visible, onClose, onSuccess, editEntry = null }) => {
@@ -32,6 +32,7 @@ const EntryModal = ({ visible, onClose, onSuccess, editEntry = null }) => {
   const [showLedgerPicker, setShowLedgerPicker] = useState(false);
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [noteHistory, setNoteHistory] = useState({});
 
   // Get categories with icons based on type
   const expenseCategories = getCategoriesByType("expense");
@@ -40,6 +41,14 @@ const EntryModal = ({ visible, onClose, onSuccess, editEntry = null }) => {
   // Get current categories based on type
   const currentCategories =
     form.type === "expense" ? expenseCategories : incomeCategories;
+
+  // Load category-specific note history from storage
+  useEffect(() => {
+    const savedNotes = Taro.getStorageSync("categoryNoteHistory") || {};
+    setNoteHistory(savedNotes);
+  }, []);
+
+  console.log("form.note", form.note);
 
   // Initialize form when modal opens or editEntry changes
   useEffect(() => {
@@ -157,6 +166,30 @@ const EntryModal = ({ visible, onClose, onSuccess, editEntry = null }) => {
     }));
   };
 
+  // Apply tag content to note
+  const handleTagClick = (note) => {
+    setForm((prev) => ({ ...prev, note }));
+  };
+
+  // Save note to category-specific history
+  const saveNoteToHistory = (note, category) => {
+    if (!note.trim() || !category) return;
+
+    const categoryHistory = noteHistory[category] || [];
+    const updatedCategoryHistory = [
+      note,
+      ...categoryHistory.filter((item) => item !== note),
+    ].slice(0, 5);
+
+    const updatedHistory = {
+      ...noteHistory,
+      [category]: updatedCategoryHistory,
+    };
+
+    setNoteHistory(updatedHistory);
+    Taro.setStorageSync("categoryNoteHistory", updatedHistory);
+  };
+
   // Submit form
   const handleSubmit = async () => {
     // Validate form
@@ -173,6 +206,11 @@ const EntryModal = ({ visible, onClose, onSuccess, editEntry = null }) => {
     if (!form.category) {
       Taro.showToast({ title: "请选择分类", icon: "none" });
       return;
+    }
+
+    // Save note to category-specific history if not empty
+    if (form.note.trim()) {
+      saveNoteToHistory(form.note, form.category);
     }
 
     setLoading(true);
@@ -259,6 +297,12 @@ const EntryModal = ({ visible, onClose, onSuccess, editEntry = null }) => {
     return ledger ? ledger.name : "请选择账本";
   };
 
+  // Get current category's note history
+  const getCurrentCategoryNotes = () => {
+    if (!form.category) return [];
+    return noteHistory[form.category] || [];
+  };
+
   return (
     <Popup
       visible={visible}
@@ -333,34 +377,46 @@ const EntryModal = ({ visible, onClose, onSuccess, editEntry = null }) => {
 
           {/* Form Fields */}
           <View className="entry-modal-form">
-            <Form>
-              <Form.Item name="ledgerId" label="账本">
-                <View
-                  className="entry-modal-form__picker"
-                  onClick={() => setShowLedgerPicker(true)}
-                >
-                  {getCurrentLedgerName()}
-                </View>
-              </Form.Item>
+            <View className="entry-modal-form-item">
+              <View className="entry-modal-form-item__label">账本</View>
+              <View
+                className="entry-modal-form__picker"
+                onClick={() => setShowLedgerPicker(true)}
+              >
+                {getCurrentLedgerName()}
+              </View>
+            </View>
 
-              <Form.Item name="date" label="日期">
-                <View
-                  className="entry-modal-form__picker"
-                  onClick={() => setShowDatePicker(true)}
-                >
-                  {form.date}
-                </View>
-              </Form.Item>
+            <View className="entry-modal-form-item">
+              <View className="entry-modal-form-item__label">日期</View>
+              <View
+                className="entry-modal-form__picker"
+                onClick={() => setShowDatePicker(true)}
+              >
+                {form.date}
+              </View>
+            </View>
 
-              <Form.Item name="note" label="备注">
-                <Input
-                  placeholder="添加备注（选填）"
-                  maxLength={10}
-                  value={form.note}
-                  onChange={(value) => handleInputChange("note", value)}
-                />
-              </Form.Item>
-            </Form>
+            <View className="entry-modal-form-item">
+              <View className="entry-modal-form-item__label">备注</View>
+              <Input
+                placeholder="添加备注（选填）"
+                maxLength={50}
+                value={form.note}
+                onChange={(value) => handleInputChange("note", value)}
+              />
+            </View>
+            {!form.note &&
+              form.category &&
+              getCurrentCategoryNotes().length > 0 && (
+                <View className="entry-modal-note-tags">
+                  {getCurrentCategoryNotes().map((note, index) => (
+                    <CustomTag key={index} onClick={() => handleTagClick(note)}>
+                      {note}
+                    </CustomTag>
+                  ))}
+                </View>
+              )}
           </View>
 
           {/* Action Buttons */}
