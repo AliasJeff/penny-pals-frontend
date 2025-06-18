@@ -48,8 +48,6 @@ const EntryModal = ({ visible, onClose, onSuccess, editEntry = null }) => {
     setNoteHistory(savedNotes);
   }, []);
 
-  console.log("form.note", form.note);
-
   // Initialize form when modal opens or editEntry changes
   useEffect(() => {
     if (visible) {

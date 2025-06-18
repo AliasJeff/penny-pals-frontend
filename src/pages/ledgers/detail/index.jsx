@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { View, Text } from "@tarojs/components";
-import Taro, { useRouter, useShareAppMessage, useDidShow } from "@tarojs/taro";
+import Taro, {
+  useRouter,
+  useShareAppMessage,
+  useDidShow,
+  usePullDownRefresh,
+} from "@tarojs/taro";
 import {
   Avatar,
   Progress,
@@ -46,6 +51,7 @@ const LedgerDetail = () => {
     entryCount: 0,
   });
   const [showShareGuide, setShowShareGuide] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   // Fetch data when component mounts
   useEffect(() => {
@@ -56,55 +62,11 @@ const LedgerDetail = () => {
 
   // Fetch ledger data
   const fetchLedgerData = async () => {
-    setLoading(true);
+    if (!refreshing) setLoading(true);
     try {
       // Fetch ledger details
       const ledgerData = await ledgerService.getLedgerDetail(id);
       setLedger(ledgerData);
-      // {
-      //   "createTime": "",
-      //   "deleteTime": "",
-      //   "description": "",
-      //   "entries": [
-      //     {
-      //       "amount": 0,
-      //       "category": "",
-      //       "createTime": "",
-      //       "date": "",
-      //       "deleteTime": "",
-      //       "icon": "",
-      //       "id": 0,
-      //       "ledgerId": 0,
-      //       "note": "",
-      //       "type": "",
-      //       "updateTime": "",
-      //       "userId": 0
-      //     }
-      //   ],
-      //   "icon": "",
-      //   "id": 0,
-      //   "members": [
-      //     {
-      //       "avatar": "",
-      //       "birthday": "",
-      //       "createTime": "",
-      //       "deleteTime": "",
-      //       "email": "",
-      //       "id": 0,
-      //       "ledgerId": 0,
-      //       "openId": "",
-      //       "phoneNumber": "",
-      //       "role": "",
-      //       "unionId": "",
-      //       "updateTime": "",
-      //       "userId": 0,
-      //       "username": ""
-      //     }
-      //   ],
-      //   "name": "",
-      //   "updateTime": ""
-      // }
-
       // Process entries if they exist in the detail API response
       if (ledgerData.entries && Array.isArray(ledgerData.entries)) {
         setEntries(ledgerData.entries);
@@ -188,6 +150,7 @@ const LedgerDetail = () => {
       });
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -322,6 +285,14 @@ const LedgerDetail = () => {
     Taro.showShareMenu({
       withShareTicket: true,
       menus: ["shareAppMessage"],
+    });
+  });
+
+  usePullDownRefresh(() => {
+    setRefreshing(true);
+    fetchLedgerData().finally(() => {
+      setRefreshing(false);
+      Taro.stopPullDownRefresh();
     });
   });
 

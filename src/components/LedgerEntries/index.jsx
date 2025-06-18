@@ -3,13 +3,12 @@ import { View, Text, ScrollView } from "@tarojs/components";
 import Taro from "@tarojs/taro";
 import {
   Empty,
-  Popup,
   Button,
   Range,
   DatePicker,
   Divider,
 } from "@nutui/nutui-react-taro";
-import { Filter, ArrowDown } from "@nutui/icons-react-taro";
+import { Filter, ArrowDown, ArrowUp } from "@nutui/icons-react-taro";
 import EntryItem from "../EntryItem";
 import CustomTag from "../CustomTag";
 import { getRelativeTimeDesc, useDatePicker } from "../../utils/dateUtils";
@@ -17,7 +16,7 @@ import "./index.less";
 
 const LedgerEntries = ({ entries = [], onEntryTap, users = [] }) => {
   const [filteredEntries, setFilteredEntries] = useState(entries);
-  const [showFilterPopup, setShowFilterPopup] = useState(false);
+  const [isFilterExpanded, setIsFilterExpanded] = useState(false);
 
   // Filter states
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -80,7 +79,6 @@ const LedgerEntries = ({ entries = [], onEntryTap, users = [] }) => {
     setSelectedUsers([]);
     setDateRange({ start: "", end: "" });
     setSelectedCategories([]);
-    setShowFilterPopup(false);
   };
 
   // Handle date picker
@@ -167,11 +165,15 @@ const LedgerEntries = ({ entries = [], onEntryTap, users = [] }) => {
         <View className="ledger-entries-filter-header">
           <View
             className="ledger-entries-filter-button"
-            onClick={() => setShowFilterPopup(true)}
+            onClick={() => setIsFilterExpanded(!isFilterExpanded)}
           >
             <Filter size={16} />
             <Text>筛选记录</Text>
-            <ArrowDown size={12} className="filter-arrow-icon" />
+            {isFilterExpanded ? (
+              <ArrowUp size={12} className="filter-arrow-icon" />
+            ) : (
+              <ArrowDown size={12} className="filter-arrow-icon" />
+            )}
           </View>
 
           {entries.length > 0 && (
@@ -251,6 +253,106 @@ const LedgerEntries = ({ entries = [], onEntryTap, users = [] }) => {
             </Text>
           </View>
         )}
+
+        {/* Expandable Filter Section */}
+        {isFilterExpanded && (
+          <View className="ledger-entries-filter-expanded">
+            <View className="ledger-entries-filter-content">
+              {/* User filter */}
+              {users.length > 0 && (
+                <View className="ledger-entries-filter-section">
+                  <Text className="ledger-entries-filter-section__title">
+                    按用户筛选
+                  </Text>
+                  <View className="ledger-entries-filter-section__content">
+                    <View className="ledger-entries-filter-tags">
+                      {users.map((user) => (
+                        <CustomTag
+                          key={user.userId}
+                          selected={selectedUsers.includes(user.userId)}
+                          onClick={() => {
+                            if (selectedUsers.includes(user.userId)) {
+                              setSelectedUsers(
+                                selectedUsers.filter((id) => id !== user.userId)
+                              );
+                            } else {
+                              setSelectedUsers([...selectedUsers, user.userId]);
+                            }
+                          }}
+                        >
+                          {user.username}
+                        </CustomTag>
+                      ))}
+                    </View>
+                  </View>
+                </View>
+              )}
+
+              {/* Date filter */}
+              <View className="ledger-entries-filter-section">
+                <Text className="ledger-entries-filter-section__title">
+                  按日期筛选
+                </Text>
+                <View className="ledger-entries-filter-section__content">
+                  <View className="ledger-entries-date-range">
+                    <View
+                      className="ledger-entries-date-picker-trigger"
+                      onClick={() => openDatePicker("start")}
+                    >
+                      <Text>{dateRange.start || "开始日期"}</Text>
+                    </View>
+                    <Text className="date-range-separator">至</Text>
+                    <View
+                      className="ledger-entries-date-picker-trigger"
+                      onClick={() => openDatePicker("end")}
+                    >
+                      <Text>{dateRange.end || "结束日期"}</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+
+              {/* Category filter */}
+              {categories.length > 0 && (
+                <View className="ledger-entries-filter-section">
+                  <Text className="ledger-entries-filter-section__title">
+                    按分类筛选
+                  </Text>
+                  <View className="ledger-entries-filter-section__content">
+                    <View className="ledger-entries-filter-tags">
+                      {categories.map((category) => (
+                        <CustomTag
+                          key={category}
+                          selected={selectedCategories.includes(category)}
+                          onClick={() => toggleCategory(category)}
+                        >
+                          {category}
+                        </CustomTag>
+                      ))}
+                    </View>
+                  </View>
+                </View>
+              )}
+
+              <View className="ledger-entries-filter-actions">
+                <Button
+                  type="default"
+                  onClick={resetFilters}
+                  className="filter-button"
+                >
+                  重置
+                </Button>
+                <Button
+                  type="primary"
+                  onClick={() => setIsFilterExpanded(false)}
+                  className="filter-button"
+                >
+                  确定
+                </Button>
+              </View>
+            </View>
+          </View>
+        )}
       </View>
 
       {/* Entries list */}
@@ -278,115 +380,6 @@ const LedgerEntries = ({ entries = [], onEntryTap, users = [] }) => {
       ) : (
         <Empty description="无符合条件的记账记录" />
       )}
-
-      {/* Filter popup */}
-      <Popup
-        visible={showFilterPopup}
-        position="bottom"
-        round
-        onClose={() => setShowFilterPopup(false)}
-        style={{ height: "70%" }}
-      >
-        <ScrollView scrollY style={{ height: "100%" }}>
-          <View className="ledger-entries-filter-popup">
-            <View className="ledger-entries-filter-popup__header">
-              <Text className="ledger-entries-filter-popup__title">
-                筛选记录
-              </Text>
-              <Text
-                className="ledger-entries-filter-popup__reset"
-                onClick={resetFilters}
-              >
-                重置
-              </Text>
-            </View>
-
-            {/* User filter */}
-            {users.length > 0 && (
-              <View className="ledger-entries-filter-section">
-                <Text className="ledger-entries-filter-section__title">
-                  按用户筛选
-                </Text>
-                <View className="ledger-entries-filter-section__content">
-                  <View className="ledger-entries-filter-tags">
-                    {users.map((user) => (
-                      <CustomTag
-                        key={user.userId}
-                        selected={selectedUsers.includes(user.userId)}
-                        onClick={() => {
-                          if (selectedUsers.includes(user.userId)) {
-                            setSelectedUsers(
-                              selectedUsers.filter((id) => id !== user.userId)
-                            );
-                          } else {
-                            setSelectedUsers([...selectedUsers, user.userId]);
-                          }
-                        }}
-                      >
-                        {user.username}
-                      </CustomTag>
-                    ))}
-                  </View>
-                </View>
-              </View>
-            )}
-
-            {/* Date filter */}
-            <View className="ledger-entries-filter-section">
-              <Text className="ledger-entries-filter-section__title">
-                按日期筛选
-              </Text>
-              <View className="ledger-entries-filter-section__content">
-                <View className="ledger-entries-date-range">
-                  <View
-                    className="ledger-entries-date-picker-trigger"
-                    onClick={() => openDatePicker("start")}
-                  >
-                    <Text>{dateRange.start || "开始日期"}</Text>
-                  </View>
-                  <Text className="date-range-separator">至</Text>
-                  <View
-                    className="ledger-entries-date-picker-trigger"
-                    onClick={() => openDatePicker("end")}
-                  >
-                    <Text>{dateRange.end || "结束日期"}</Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-
-            {/* Category filter */}
-            {categories.length > 0 && (
-              <View className="ledger-entries-filter-section">
-                <Text className="ledger-entries-filter-section__title">
-                  按分类筛选
-                </Text>
-                <View className="ledger-entries-filter-section__content">
-                  <View className="ledger-entries-filter-tags">
-                    {categories.map((category) => (
-                      <CustomTag
-                        key={category}
-                        selected={selectedCategories.includes(category)}
-                        onClick={() => toggleCategory(category)}
-                      >
-                        {category}
-                      </CustomTag>
-                    ))}
-                  </View>
-                </View>
-              </View>
-            )}
-
-            <Button
-              type="primary"
-              block
-              onClick={() => setShowFilterPopup(false)}
-            >
-              应用筛选
-            </Button>
-          </View>
-        </ScrollView>
-      </Popup>
 
       {/* Date picker popup */}
       <DatePicker
