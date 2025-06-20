@@ -31,10 +31,10 @@ const EntryItem = ({ entry, onTap, onChange }) => {
   // Determine amount color based on type
   const getAmountColor = () => {
     switch (type) {
-      case "expense":
-        return "entry-item__amount--expense";
-      case "income":
-        return "entry-item__amount--income";
+      // case "expense":
+      //   return "entry-item__amount--expense";
+      // case "income":
+      //   return "entry-item__amount--income";
       default:
         return "";
     }

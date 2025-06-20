@@ -17,6 +17,8 @@ import "./index.less";
 const LedgerEntries = ({ entries = [], onEntryTap, users = [] }) => {
   const [filteredEntries, setFilteredEntries] = useState(entries);
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
+  const [totalIncome, setTotalIncome] = useState(0);
+  const [totalExpense, setTotalExpense] = useState(0);
 
   // Filter states
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -33,6 +35,11 @@ const LedgerEntries = ({ entries = [], onEntryTap, users = [] }) => {
     applyFilters();
   }, [entries, selectedUsers, dateRange, selectedCategories]);
 
+  // Calculate totals whenever filtered entries change
+  useEffect(() => {
+    calculateFilteredTotals();
+  }, [filteredEntries]);
+
   // Extract unique categories from entries
   useEffect(() => {
     if (entries && entries.length > 0) {
@@ -42,6 +49,25 @@ const LedgerEntries = ({ entries = [], onEntryTap, users = [] }) => {
       setCategories(uniqueCategories);
     }
   }, [entries]);
+
+  // Calculate total income and expense for filtered entries
+  const calculateFilteredTotals = () => {
+    const { income, expense } = filteredEntries.reduce(
+      (acc, entry) => {
+        const amount = parseFloat(entry.amount) || 0;
+        if (entry.type === "income") {
+          acc.income += amount;
+        } else if (entry.type === "expense") {
+          acc.expense += amount;
+        }
+        return acc;
+      },
+      { income: 0, expense: 0 }
+    );
+
+    setTotalIncome(income.toFixed(1));
+    setTotalExpense(expense.toFixed(1));
+  };
 
   // Apply all filters to entries
   const applyFilters = () => {
@@ -184,6 +210,12 @@ const LedgerEntries = ({ entries = [], onEntryTap, users = [] }) => {
                 <Text>
                   筛选出 {filteredEntries.length}/{entries.length} 笔记录
                 </Text>
+              )}
+              {filteredEntries.length > 0 && (
+                <View className="ledger-entries-result-total">
+                  <Text>收入: ¥{totalIncome}</Text>
+                  <Text>支出: ¥{totalExpense}</Text>
+                </View>
               )}
             </View>
           )}

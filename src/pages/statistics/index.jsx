@@ -384,9 +384,13 @@ const Statistics = () => {
 
           <View className="statistics-chart">
             <LineChart
-              dailyExpenses={
-                viewMode === "expense" ? dailyExpenses : dailyIncomes
-              }
+              dailyExpenses={(viewMode === "expense"
+                ? dailyExpenses
+                : dailyIncomes
+              ).map((item) => ({
+                ...item,
+                amount: Number(item.amount.toFixed(1)),
+              }))}
               style={{ width: "100%", height: "200px" }}
               isIncome={viewMode === "income"}
             />

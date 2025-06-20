@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text } from "@tarojs/components";
 import Taro from "@tarojs/taro";
-import { Button, Toast, Dialog } from "@nutui/nutui-react-taro";
+import { Button, Toast, Dialog, Checkbox } from "@nutui/nutui-react-taro";
 import { userService } from "../../services";
 import "./index.less";
 
@@ -9,9 +9,19 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [showAgreement, setShowAgreement] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
+  const [termsAgreed, setTermsAgreed] = useState(false);
 
   // Handle WeChat login
   const handleWeChatLogin = async () => {
+    if (!termsAgreed) {
+      Taro.showToast({
+        title: "请先同意用户协议和隐私政策",
+        icon: "none",
+        duration: 1000,
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       // Get WeChat login code
@@ -120,22 +130,28 @@ const Login = () => {
         </View>
 
         <View className="login-agreement">
-          <Text className="login-agreement__text">
-            登录即表示您已同意
-            <Text
-              className="login-agreement__link"
-              onClick={() => setShowAgreement(true)}
-            >
-              《用户协议》
+          <View className="login-checkbox">
+            <Checkbox
+              checked={termsAgreed}
+              onChange={(val) => setTermsAgreed(val)}
+            />
+            <Text className="login-agreement__text">
+              我已阅读并同意
+              <Text
+                className="login-agreement__link"
+                onClick={() => setShowAgreement(true)}
+              >
+                《用户协议》
+              </Text>
+              和
+              <Text
+                className="login-agreement__link"
+                onClick={() => setShowPrivacy(true)}
+              >
+                《隐私政策》
+              </Text>
             </Text>
-            和
-            <Text
-              className="login-agreement__link"
-              onClick={() => setShowPrivacy(true)}
-            >
-              《隐私政策》
-            </Text>
-          </Text>
+          </View>
         </View>
       </View>
 

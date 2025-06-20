@@ -166,6 +166,21 @@ const LedgerDetail = () => {
     return Math.min(percentage, 100);
   };
 
+  // Calculate member stats
+  const calculateMemberStats = (userId) => {
+    const memberEntries = entries.filter((entry) => entry.userId === userId);
+
+    const totalExpense = memberEntries
+      .filter((entry) => entry.type === "expense")
+      .reduce((sum, entry) => sum + (entry.amount || 0), 0);
+
+    const totalIncome = memberEntries
+      .filter((entry) => entry.type === "income")
+      .reduce((sum, entry) => sum + (entry.amount || 0), 0);
+
+    return { totalExpense, totalIncome };
+  };
+
   // Handle add entry
   const handleAddEntry = () => {
     setSelectedEntry(null);
@@ -409,6 +424,23 @@ const LedgerDetail = () => {
                         <Text className="ledger-detail-member__name">
                           {user.username}
                         </Text>
+                        {(() => {
+                          const stats = calculateMemberStats(user.id);
+                          return (
+                            <View className="ledger-detail-member__stats">
+                              <View className="ledger-detail-member__stat">
+                                <Text className="ledger-detail-member__stat-label">
+                                  支出 ¥{stats.totalExpense.toFixed(2)}
+                                </Text>
+                              </View>
+                              <View className="ledger-detail-member__stat">
+                                <Text className="ledger-detail-member__stat-label">
+                                  收入 ¥{stats.totalIncome.toFixed(2)}
+                                </Text>
+                              </View>
+                            </View>
+                          );
+                        })()}
                         <Text className="ledger-detail-member__role">
                           {user.role || "成员"}
                         </Text>
